@@ -14,6 +14,7 @@ fn main() {
     match args.len() {
         2 => match args[1].parse() {
             Ok(1) => day1::solve(),
+            Ok(2) => day2::solve(),
             Ok(day_num) => println!("Day {day_num} not implemented yet"),
             Err(e) => panic!("Could not parse argument {e:?}"),
         },
