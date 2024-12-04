@@ -18,12 +18,8 @@ fn parse_and_mul(a: &str, b: &str) -> Result<i32, ParseIntError> {
     Ok(a * b)
 }
 
-fn mul_regex() -> Regex {
-    Regex::new(r"mul\((\d+),(\d+)\)").unwrap()
-}
-
 fn extract_and_mul(line: &str) -> i32 {
-    let regexpr = mul_regex();
+    let regexpr = Regex::new(r"mul\((\d+),(\d+)\)").unwrap();
 
     let mut result = 0;
     for (_, [a, b]) in regexpr.captures_iter(line).map(|c| c.extract()) {
