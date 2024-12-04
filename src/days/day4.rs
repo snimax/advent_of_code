@@ -55,21 +55,20 @@ fn find_match(list: &[String], row: usize, col: usize) -> usize {
     let row2_char = list[row + 2].chars().nth(col);
     let row3_char = list[row + 3].chars().nth(col);
 
-    if row0_char == Some('X')
+    let xmas = row0_char == Some('X')
         && row1_char == Some('M')
         && row2_char == Some('A')
-        && row3_char == Some('S')
-    {
-        return 1;
-    } else if row0_char == Some('S')
+        && row3_char == Some('S');
+
+    let samx = row0_char == Some('S')
         && row1_char == Some('A')
         && row2_char == Some('M')
-        && row3_char == Some('X')
-    {
-        return 1;
+        && row3_char == Some('X');
+    if xmas || samx {
+        1
+    } else {
+        0
     }
-
-    0
 }
 
 fn find_matches(list: &[String]) -> usize {
