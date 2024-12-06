@@ -159,8 +159,6 @@ fn part2(map: &mut Map, start_pos: &Pos) -> usize {
     let mut visited_positions = HashSet::new();
     visited_positions.insert(curr_pos.clone());
 
-    let mut path = vec![curr_pos.clone()];
-
     let mut result = 0;
 
     while let Some(val) = map.next(&curr_pos, &dir) {
@@ -172,7 +170,7 @@ fn part2(map: &mut Map, start_pos: &Pos) -> usize {
                     continue;
                 }
 
-                if !path.contains(&next_pos) {
+                if !visited_positions.contains(&next_pos) {
                     map.map[next_pos.y as usize][next_pos.x as usize] = b'#';
                     if find_visited_positions(map, &curr_pos, &dir).is_none() {
                         result += 1
@@ -182,7 +180,6 @@ fn part2(map: &mut Map, start_pos: &Pos) -> usize {
 
                 curr_pos = next_pos;
                 visited_positions.insert(curr_pos.clone());
-                path.push(curr_pos.clone())
             }
             b'#' => dir = get_next_dir(&dir),
             _ => panic!("got unexpected value from map {}", val),
