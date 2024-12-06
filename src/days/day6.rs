@@ -45,8 +45,8 @@ const DOWN: Dir = Dir { x: 0, y: 1 };
 const LEFT: Dir = Dir { x: -1, y: 0 };
 const RIGHT: Dir = Dir { x: 1, y: 0 };
 
-fn get_next_dir(dir: &Dir) -> Dir {
-    match *dir {
+fn turn_right(dir: &mut Dir) {
+    *dir = match *dir {
         UP => RIGHT,
         RIGHT => DOWN,
         DOWN => LEFT,
@@ -76,6 +76,10 @@ impl Map {
 
     fn get(&self, pos: &Pos) -> u8 {
         self.map[pos.y as usize][pos.x as usize]
+    }
+
+    fn set(&mut self, pos: &Pos, val: u8) {
+        self.map[pos.y as usize][pos.x as usize] = val;
     }
 
     fn valid_pos(&self, pos: &Pos) -> bool {
@@ -140,7 +144,7 @@ fn find_visited_positions(map: &Map, start_pos: &Pos, dir: &Dir) -> Option<HashS
                 }
                 path.insert((curr_pos.clone(), dir.clone()));
             }
-            b'#' => dir = get_next_dir(&dir),
+            b'#' => turn_right(&mut dir),
             _ => panic!("got unexpected value from map {}", val),
         }
     }
@@ -171,17 +175,17 @@ fn part2(map: &mut Map, start_pos: &Pos) -> usize {
                 }
 
                 if !visited_positions.contains(&next_pos) {
-                    map.map[next_pos.y as usize][next_pos.x as usize] = b'#';
+                    map.set(&next_pos, b'#');
                     if find_visited_positions(map, &curr_pos, &dir).is_none() {
                         result += 1
                     }
-                    map.map[next_pos.y as usize][next_pos.x as usize] = b'.';
+                    map.set(&next_pos, b'.');
                 }
 
                 curr_pos = next_pos;
                 visited_positions.insert(curr_pos.clone());
             }
-            b'#' => dir = get_next_dir(&dir),
+            b'#' => turn_right(&mut dir),
             _ => panic!("got unexpected value from map {}", val),
         }
     }
