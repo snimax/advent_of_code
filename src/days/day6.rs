@@ -2,12 +2,20 @@ use advent_of_code_2024::{parse_file, parse_lines};
 use std::collections::HashSet;
 use std::ops::Add;
 
+use std::time::Instant;
+
 pub fn solve() {
     if let Ok(line_string) = parse_file("Inputs/day6.txt") {
         let lines = parse_lines(&line_string);
         let (map, start_pos) = parse_map(&lines);
+        let now = Instant::now();
         println!("Part1 solution: {}", part1(&map, &start_pos));
+        let elapsed = now.elapsed();
+        println!("Elapsed: {:.5?}", elapsed);
+        let now = Instant::now();
         println!("Part2 solution: {}", part2(&map, &start_pos));
+        let elapsed = now.elapsed();
+        println!("Elapsed: {:.5?}", elapsed);
     } else {
         println!("Could not parse file");
     }
@@ -60,19 +68,21 @@ impl Map {
             x: curr_pos.x + dir.x,
             y: curr_pos.y + dir.y,
         };
-        if new_pos.x < 0
-            || new_pos.y < 0
-            || new_pos.x >= self.size_x as i32
-            || new_pos.y >= self.size_y as i32
-        {
-            return None;
+        match self.valid_pos(&new_pos) {
+            false => None,
+            true => Some(self.get(&new_pos)),
         }
-
-        Some(self.get(&new_pos))
     }
 
     fn get(&self, pos: &Pos) -> u8 {
         self.map[pos.y as usize][pos.x as usize]
+    }
+
+    fn valid_pos(&self, pos: &Pos) -> bool {
+        if pos.x < 0 || pos.y < 0 || pos.x >= self.size_x as i32 || pos.y >= self.size_y as i32 {
+            return false;
+        }
+        true
     }
 }
 
@@ -110,15 +120,14 @@ fn parse_map(lines: &[String]) -> (Map, Pos) {
     )
 }
 
-fn found_loop(path: &Vec<Pos>) -> bool {
+fn found_loop(path: &[Pos]) -> bool {
     if path.len() < 4 {
         return false;
     }
     let last = path[path.len() - 1].clone();
     let second_last = path[path.len() - 2].clone();
 
-    for i in 0..path.len()-3
-    {
+    for i in 0..path.len() - 3 {
         if path[i] == second_last && path[i + 1] == last {
             return true;
         }
@@ -127,9 +136,9 @@ fn found_loop(path: &Vec<Pos>) -> bool {
     false
 }
 
-fn find_visited_positions(map: &Map, start_pos: &Pos) -> Option<HashSet<Pos>> {
+fn find_visited_positions(map: &Map, start_pos: &Pos, dir: &Dir) -> Option<HashSet<Pos>> {
     let mut curr_pos = start_pos.clone();
-    let mut dir = UP;
+    let mut dir = dir.clone();
 
     let mut visited_positions = HashSet::new();
     visited_positions.insert(curr_pos.clone());
@@ -154,20 +163,38 @@ fn find_visited_positions(map: &Map, start_pos: &Pos) -> Option<HashSet<Pos>> {
 }
 
 fn part1(map: &Map, start_pos: &Pos) -> usize {
-    let visited_positions = find_visited_positions(&map, &start_pos);
+    let visited_positions = find_visited_positions(map, start_pos, &UP);
     visited_positions.unwrap().len()
 }
 
 fn part2(map: &Map, start_pos: &Pos) -> usize {
-    let visited_positions = find_visited_positions(&map, &start_pos).unwrap();
+    let mut curr_pos = start_pos.clone();
+    let mut dir = UP;
+
+    let mut visited_positions = HashSet::new();
+    visited_positions.insert(curr_pos.clone());
+
+    let mut path = vec![curr_pos.clone()];
 
     let mut result = 0;
-    for (idx, pos) in visited_positions.iter().filter(|&pos| pos != start_pos).enumerate() {
-        let mut new_map = map.clone();
-        new_map.map[pos.y as usize][pos.x as usize] = b'#';
-        println!("Testing solution {idx}");
-        if find_visited_positions(&new_map, start_pos) == None {
-            result += 1;
+
+    while let Some(val) = map.next(&curr_pos, &dir) {
+        match val {
+            b'.' => {
+                let next_pos = curr_pos.clone() + dir.clone();
+                if !path.contains(&next_pos) {
+                    let mut new_map = map.clone();
+                    new_map.map[next_pos.y as usize][next_pos.x as usize] = b'#';
+                    if find_visited_positions(&new_map, &curr_pos, &dir).is_none() {
+                        result += 1
+                    }
+                }
+                curr_pos = next_pos;
+                visited_positions.insert(curr_pos.clone());
+                path.push(curr_pos.clone())
+            }
+            b'#' => dir = get_next_dir(&dir),
+            _ => panic!("got unexpected value from map {}", val),
         }
     }
 
