@@ -7,13 +7,13 @@ use std::time::Instant;
 pub fn solve() {
     if let Ok(line_string) = parse_file("Inputs/day6.txt") {
         let lines = parse_lines(&line_string);
-        let (map, start_pos) = parse_map(&lines);
+        let (mut map, start_pos) = parse_map(&lines);
         let now = Instant::now();
         println!("Part1 solution: {}", part1(&map, &start_pos));
         let elapsed = now.elapsed();
         println!("Elapsed: {:.5?}", elapsed);
         let now = Instant::now();
-        println!("Part2 solution: {}", part2(&map, &start_pos));
+        println!("Part2 solution: {}", part2(&mut map, &start_pos));
         let elapsed = now.elapsed();
         println!("Elapsed: {:.5?}", elapsed);
     } else {
@@ -167,7 +167,7 @@ fn part1(map: &Map, start_pos: &Pos) -> usize {
     visited_positions.unwrap().len()
 }
 
-fn part2(map: &Map, start_pos: &Pos) -> usize {
+fn part2(map: &mut Map, start_pos: &Pos) -> usize {
     let mut curr_pos = start_pos.clone();
     let mut dir = UP;
 
@@ -182,13 +182,19 @@ fn part2(map: &Map, start_pos: &Pos) -> usize {
         match val {
             b'.' => {
                 let next_pos = curr_pos.clone() + dir.clone();
+                // No use in putting out obsticles where one already exists
+                if map.get(&next_pos) == b'#' {
+                    continue;
+                }
+
                 if !path.contains(&next_pos) {
-                    let mut new_map = map.clone();
-                    new_map.map[next_pos.y as usize][next_pos.x as usize] = b'#';
-                    if find_visited_positions(&new_map, &curr_pos, &dir).is_none() {
+                    map.map[next_pos.y as usize][next_pos.x as usize] = b'#';
+                    if find_visited_positions(map, &curr_pos, &dir).is_none() {
                         result += 1
                     }
+                    map.map[next_pos.y as usize][next_pos.x as usize] = b'.';
                 }
+
                 curr_pos = next_pos;
                 visited_positions.insert(curr_pos.clone());
                 path.push(curr_pos.clone())
@@ -230,8 +236,8 @@ mod tests {
 
     #[test]
     fn test_part2() -> Result<(), String> {
-        let (map, start_pos) = get_input();
-        assert_eq!(part2(&map, &start_pos), 6);
+        let (mut map, start_pos) = get_input();
+        assert_eq!(part2(&mut map, &start_pos), 6);
 
         Ok(())
     }
