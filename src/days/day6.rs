@@ -120,22 +120,6 @@ fn parse_map(lines: &[String]) -> (Map, Pos) {
     )
 }
 
-fn found_loop(path: &[Pos]) -> bool {
-    if path.len() < 4 {
-        return false;
-    }
-    let last = path[path.len() - 1].clone();
-    let second_last = path[path.len() - 2].clone();
-
-    for i in 0..path.len() - 3 {
-        if path[i] == second_last && path[i + 1] == last {
-            return true;
-        }
-    }
-
-    false
-}
-
 fn find_visited_positions(map: &Map, start_pos: &Pos, dir: &Dir) -> Option<HashSet<Pos>> {
     let mut curr_pos = start_pos.clone();
     let mut dir = dir.clone();
@@ -143,17 +127,18 @@ fn find_visited_positions(map: &Map, start_pos: &Pos, dir: &Dir) -> Option<HashS
     let mut visited_positions = HashSet::new();
     visited_positions.insert(curr_pos.clone());
 
-    let mut path = vec![curr_pos.clone()];
+    let mut path = HashSet::new();
+    path.insert((curr_pos.clone(), dir.clone()));
 
     while let Some(val) = map.next(&curr_pos, &dir) {
-        if found_loop(&path) {
-            return None;
-        }
         match val {
             b'.' => {
                 curr_pos = curr_pos + dir.clone();
                 visited_positions.insert(curr_pos.clone());
-                path.push(curr_pos.clone())
+                if path.contains(&(curr_pos.clone(), dir.clone())) {
+                    return None;
+                }
+                path.insert((curr_pos.clone(), dir.clone()));
             }
             b'#' => dir = get_next_dir(&dir),
             _ => panic!("got unexpected value from map {}", val),
