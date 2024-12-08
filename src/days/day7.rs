@@ -54,7 +54,12 @@ fn try_solve_equation_recursive(
         let mut str = running_val.to_string();
         str.push_str(&first_num.to_string());
         let concat = str.parse::<usize>().unwrap();
-        results.push(try_solve_equation_recursive(answer, concat, rest, allow_concatenation));
+        results.push(try_solve_equation_recursive(
+            answer,
+            concat,
+            rest,
+            allow_concatenation,
+        ));
     }
 
     results
@@ -64,7 +69,11 @@ fn try_solve_equation_recursive(
         .reduce(|acc, f| Some(usize::max(acc.unwrap(), f.unwrap())))?
 }
 
-fn try_solve_equation(answer: &usize, numbers: &[usize], allow_concatenation: bool) -> Option<usize> {
+fn try_solve_equation(
+    answer: &usize,
+    numbers: &[usize],
+    allow_concatenation: bool,
+) -> Option<usize> {
     let first_num = numbers[0];
     let rest = &numbers[1..];
 

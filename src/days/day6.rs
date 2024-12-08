@@ -1,40 +1,14 @@
-use advent_of_code_2024::{parse_file, parse_lines};
+use advent_of_code_2024::{parse_file, parse_lines, Pos};
 use std::collections::HashSet;
-use std::ops::Add;
-
-use std::time::Instant;
 
 pub fn solve() {
     if let Ok(line_string) = parse_file("Inputs/day6.txt") {
         let lines = parse_lines(&line_string);
         let (mut map, start_pos) = parse_map(&lines);
-        let now = Instant::now();
         println!("Part1 solution: {}", part1(&map, &start_pos));
-        let elapsed = now.elapsed();
-        println!("Elapsed: {:.5?}", elapsed);
-        let now = Instant::now();
         println!("Part2 solution: {}", part2(&mut map, &start_pos));
-        let elapsed = now.elapsed();
-        println!("Elapsed: {:.5?}", elapsed);
     } else {
         println!("Could not parse file");
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-struct Pos {
-    x: i32,
-    y: i32,
-}
-
-impl Add for Pos {
-    type Output = Self;
-
-    fn add(self, rhs: Self) -> Self::Output {
-        Self {
-            x: self.x + rhs.x,
-            y: self.y + rhs.y,
-        }
     }
 }
 
