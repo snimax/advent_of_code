@@ -3,7 +3,7 @@ use advent_of_code_2024::parse_file;
 pub fn solve() {
     if let Ok(line_string) = parse_file("Inputs/day9.txt") {
         let disk = parse_disk_string(&line_string);
-        // println!("Part1 solution: {}", part1(&disk));
+        println!("Part1 solution: {}", part1(&disk));
         println!("Part2 solution: {}", part2(&line_string));
     } else {
         println!("Could not parse file");
