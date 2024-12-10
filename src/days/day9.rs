@@ -117,21 +117,23 @@ fn part2(str: &str) -> usize {
                         continue;
                     }
                     Block::Empty(empty_space) => {
-                        if *empty_space >= file_size{
-                            let moved_file_idx = defragmented_disk.iter().position(|block| {
-                                if let Block::File(id2, _) = block {
-                                    if *id2 == id {
-                                        return true;
+                        if *empty_space >= file_size {
+                            let moved_file_idx = defragmented_disk
+                                .iter()
+                                .position(|block| {
+                                    if let Block::File(id2, _) = block {
+                                        if *id2 == id {
+                                            return true;
+                                        } else {
+                                            return false;
+                                        }
                                     } else {
                                         return false;
                                     }
-                                } else {
-                                    return false;
-                                }
-                            }).unwrap();
+                                })
+                                .unwrap();
 
-                            if idx > moved_file_idx
-                            {
+                            if idx > moved_file_idx {
                                 continue;
                             }
 
@@ -160,13 +162,12 @@ fn part2(str: &str) -> usize {
     for block in defragmented_disk.iter() {
         match block {
             Block::File(id, size) => {
-                for _ in 0..*size
-                {
+                for _ in 0..*size {
                     result += id * idx;
                     idx += 1;
                 }
-            },
-            Block::Empty(size) => {idx += size}
+            }
+            Block::Empty(size) => idx += size,
         }
     }
     result
