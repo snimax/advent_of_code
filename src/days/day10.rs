@@ -56,19 +56,19 @@ fn parse_map(lines: &[String]) -> (Map<i32>, Vec<Pos>) {
 fn part1(map: &Map<i32>, starting_positions: &Vec<Pos>) -> usize {
     let mut result = 0;
     for start_pos in starting_positions.iter() {
-        result += find_trailheads(map, start_pos);
+        result += find_trailheads(map, start_pos, false);
     }
 
     result
 }
 
-fn find_trailheads(map: &Map<i32>, start_pos: &Pos) -> usize {
+fn find_trailheads(map: &Map<i32>, start_pos: &Pos, all_permutations: bool) -> usize {
     let mut queue = VecDeque::new();
     let mut visited = HashSet::new();
     let mut trailheads = 0;
     queue.push_back(start_pos.clone());
     while let Some(pos) = queue.pop_front() {
-        if visited.insert(pos.clone()) {
+        if all_permutations || visited.insert(pos.clone()) {
             if map.get(&pos) == 9 {
                 trailheads += 1;
             } else {
@@ -108,30 +108,10 @@ fn get_neighbors(pos: &Pos, map: &Map<i32>) -> Vec<Pos> {
     valid_neighbors
 }
 
-fn find_trailhead_permutations(map: &Map<i32>, start_pos: &Pos) -> usize {
-    let mut queue = VecDeque::new();
-    // let mut visited = HashSet::new();
-    let mut trailheads = 0;
-    queue.push_back(start_pos.clone());
-    while let Some(pos) = queue.pop_front() {
-        // if visited.insert(pos.clone())
-        {
-            if map.get(&pos) == 9 {
-                trailheads += 1;
-            } else {
-                get_neighbors(&pos, map)
-                    .iter()
-                    .for_each(|neighbor| queue.push_front(neighbor.clone()));
-            }
-        }
-    }
-    trailheads
-}
-
 fn part2(map: &Map<i32>, starting_positions: &Vec<Pos>) -> usize {
     let mut result = 0;
     for start_pos in starting_positions.iter() {
-        result += find_trailhead_permutations(map, start_pos);
+        result += find_trailheads(map, start_pos, true);
     }
 
     result
