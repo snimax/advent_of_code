@@ -24,13 +24,12 @@ fn parse_disk_string(str: &str) -> Vec<Option<u32>> {
 
         if idx % 2 == 0 {
             file_id += 1
-        } else {
         }
     }
     disk_representation
 }
 
-fn part1(disk_representation: &Vec<Option<u32>>) -> usize {
+fn part1(disk_representation: &[Option<u32>]) -> usize {
     let mut idx = 0;
     let mut rev_idx = disk_representation.len() - 1;
 
@@ -40,7 +39,7 @@ fn part1(disk_representation: &Vec<Option<u32>>) -> usize {
         match disk_representation[idx] {
             Some(val) => defragmented_disk.push(val),
             None => {
-                while disk_representation[rev_idx] == None && rev_idx > idx {
+                while disk_representation[rev_idx].is_none() && rev_idx > idx {
                     rev_idx -= 1;
                 }
                 if disk_representation[rev_idx].is_some() {
@@ -102,7 +101,6 @@ fn part2(str: &str) -> usize {
 
         if idx % 2 == 0 {
             file_id += 1
-        } else {
         }
     }
 
@@ -122,13 +120,9 @@ fn part2(str: &str) -> usize {
                                 .iter()
                                 .position(|block| {
                                     if let Block::File(id2, _) = block {
-                                        if *id2 == id {
-                                            return true;
-                                        } else {
-                                            return false;
-                                        }
+                                        *id2 == id
                                     } else {
-                                        return false;
+                                        false
                                     }
                                 })
                                 .unwrap();

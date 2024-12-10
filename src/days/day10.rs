@@ -53,7 +53,7 @@ fn parse_map(lines: &[String]) -> (Map<i32>, Vec<Pos>) {
     )
 }
 
-fn part1(map: &Map<i32>, starting_positions: &Vec<Pos>) -> usize {
+fn part1(map: &Map<i32>, starting_positions: &[Pos]) -> usize {
     let mut result = 0;
     for start_pos in starting_positions.iter() {
         result += find_trailheads(map, start_pos, false);
@@ -108,7 +108,7 @@ fn get_neighbors(pos: &Pos, map: &Map<i32>) -> Vec<Pos> {
     valid_neighbors
 }
 
-fn part2(map: &Map<i32>, starting_positions: &Vec<Pos>) -> usize {
+fn part2(map: &Map<i32>, starting_positions: &[Pos]) -> usize {
     let mut result = 0;
     for start_pos in starting_positions.iter() {
         result += find_trailheads(map, start_pos, true);
