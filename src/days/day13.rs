@@ -1,4 +1,4 @@
-use advent_of_code_2024::{parse_file, parse_lines, Pos};
+use advent_of_code_2024::{cramers_rule, parse_file, parse_lines, Equation, Pos};
 use std::collections::HashMap;
 
 pub fn solve() {
@@ -72,120 +72,48 @@ fn parse_claw_machines(lines: &[String]) -> Vec<ClawMachine> {
     claw_machines
 }
 
-fn recurse(
-    curr_pos: &Pos,
-    a_uses_left: usize,
-    b_uses_left: usize,
-    claw_machine: &ClawMachine,
-    memoization: &mut HashMap<(Pos, usize, usize), usize>,
-) -> usize {
-    if let Some(res) = memoization.get(&(curr_pos.clone(), a_uses_left, b_uses_left)) {
-        return *res;
-    }
-
-    if curr_pos.x == 0 && curr_pos.y == 0 {
-        memoization.insert((curr_pos.clone(), a_uses_left, b_uses_left), 0);
-        return 0;
-    }
-
-    if a_uses_left == 0 && b_uses_left == 0 {
-        let greater_than_max = 3 * 100 + 100 + 4; // Just more than maximum, but less than overflow 😅
-        memoization.insert(
-            (curr_pos.clone(), a_uses_left, b_uses_left),
-            greater_than_max,
-        );
-        return greater_than_max;
-    }
-
-    if a_uses_left > 0 && b_uses_left > 0 {
-        let used_a = 3 + recurse(
-            &(curr_pos.clone() - claw_machine.button_a.clone()),
-            a_uses_left - 1,
-            b_uses_left,
-            claw_machine,
-            memoization,
-        );
-        let used_b = 1 + recurse(
-            &(curr_pos.clone() - claw_machine.button_b.clone()),
-            a_uses_left,
-            b_uses_left - 1,
-            claw_machine,
-            memoization,
-        );
-        let result = usize::min(used_a, used_b);
-        memoization.insert((curr_pos.clone(), a_uses_left, b_uses_left), result);
-        return result;
-    }
-
-    if a_uses_left > 0 {
-        let result = 3 + recurse(
-            &(curr_pos.clone() - claw_machine.button_a.clone()),
-            a_uses_left - 1,
-            b_uses_left,
-            claw_machine,
-            memoization,
-        );
-        memoization.insert((curr_pos.clone(), a_uses_left, b_uses_left), result);
-        return result;
-    }
-
-    // Only b uses left
-    let result = 1 + recurse(
-        &(curr_pos.clone() - claw_machine.button_b.clone()),
-        a_uses_left,
-        b_uses_left - 1,
-        claw_machine,
-        memoization,
-    );
-    memoization.insert((curr_pos.clone(), a_uses_left, b_uses_left), result);
-    result
-}
-
-fn min_tokens_required(claw_machine: &ClawMachine) -> usize {
-    let mut memoization = HashMap::new();
-    let res = recurse(
-        &claw_machine.prize,
-        100,
-        100,
-        claw_machine,
-        &mut memoization,
-    );
-    if res <= 3 * 100 + 100 {
-        return res;
-    }
-    0
-}
-
 fn part1(claw_machines: &[ClawMachine]) -> usize {
     let mut result = 0;
     for claw_machine in claw_machines.iter() {
-        result += min_tokens_required(claw_machine);
+        let x_equation = Equation::<f32>{
+            x: claw_machine.button_a.x as f32,
+            y: claw_machine.button_b.x as f32,
+            ans: claw_machine.prize.x as f32
+        };
+
+        let y_equation = Equation::<f32>{
+            x: claw_machine.button_a.y as f32,
+            y: claw_machine.button_b.y as f32,
+            ans: claw_machine.prize.y as f32
+        };
+
+        let (x, y) = cramers_rule::<f32>(&x_equation, &y_equation);
+
+        let allowed_range = 0.0..=100.0;
+        if allowed_range.contains(&x) && allowed_range.contains(&y)  && x.round() == x && y.round() == y {
+            result += x as usize * 3 + y as usize;
+        }
     }
     result
 }
 fn part2(claw_machines: &[ClawMachine]) -> usize {
     let mut result = 0;
     for claw_machine in claw_machines.iter() {
-        // x1 x2 = x_ans
-        // y1 y2 = y_ans
-        let x1 = claw_machine.button_a.x as f64;
-        let x2 = claw_machine.button_b.x as f64;
-        let x_ans = claw_machine.prize.x as f64 + 10000000000000.0;
+        let x_equation = Equation::<f64>{
+            x: claw_machine.button_a.x as f64,
+            y: claw_machine.button_b.x as f64,
+            ans: claw_machine.prize.x as f64 + 10000000000000.0
+        };
 
-        let y1 = claw_machine.button_a.y as f64;
-        let y2 = claw_machine.button_b.y as f64;
-        let y_ans = claw_machine.prize.y as f64 + 10000000000000.0;
+        let y_equation = Equation::<f64>{
+            x: claw_machine.button_a.y as f64,
+            y: claw_machine.button_b.y as f64,
+            ans: claw_machine.prize.y as f64 + 10000000000000.0
+        };
 
-        // cramers rule
-        let denominator = x1 * y2 - y1 * x2;
+        let (x, y) = cramers_rule::<f64>(&x_equation, &y_equation);
 
-        let x_nominator = x_ans * y2 - y_ans * x2;
-        let y_nominator = x1 * y_ans - y1 * x_ans;
-
-        let x = x_nominator / denominator;
-        let y = y_nominator / denominator;
-
-        if x > 0.0 && y > 0.0 && x.round() == x && y.round() == y {
+        if x >= 0.0 && y >= 0.0 && x.round() == x && y.round() == y {
             result += x as usize * 3 + y as usize;
         }
     }
