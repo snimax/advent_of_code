@@ -1,5 +1,4 @@
 use advent_of_code_2024::{cramers_rule, parse_file, parse_lines, Equation, Pos};
-use std::collections::HashMap;
 
 pub fn solve() {
     if let Ok(line_string) = parse_file("Inputs/day13.txt") {
@@ -75,22 +74,26 @@ fn parse_claw_machines(lines: &[String]) -> Vec<ClawMachine> {
 fn part1(claw_machines: &[ClawMachine]) -> usize {
     let mut result = 0;
     for claw_machine in claw_machines.iter() {
-        let x_equation = Equation::<f32>{
+        let x_equation = Equation::<f32> {
             x: claw_machine.button_a.x as f32,
             y: claw_machine.button_b.x as f32,
-            ans: claw_machine.prize.x as f32
+            ans: claw_machine.prize.x as f32,
         };
 
-        let y_equation = Equation::<f32>{
+        let y_equation = Equation::<f32> {
             x: claw_machine.button_a.y as f32,
             y: claw_machine.button_b.y as f32,
-            ans: claw_machine.prize.y as f32
+            ans: claw_machine.prize.y as f32,
         };
 
         let (x, y) = cramers_rule::<f32>(&x_equation, &y_equation);
 
         let allowed_range = 0.0..=100.0;
-        if allowed_range.contains(&x) && allowed_range.contains(&y)  && x.round() == x && y.round() == y {
+        if allowed_range.contains(&x)
+            && allowed_range.contains(&y)
+            && x.round() == x
+            && y.round() == y
+        {
             result += x as usize * 3 + y as usize;
         }
     }
@@ -99,16 +102,16 @@ fn part1(claw_machines: &[ClawMachine]) -> usize {
 fn part2(claw_machines: &[ClawMachine]) -> usize {
     let mut result = 0;
     for claw_machine in claw_machines.iter() {
-        let x_equation = Equation::<f64>{
+        let x_equation = Equation::<f64> {
             x: claw_machine.button_a.x as f64,
             y: claw_machine.button_b.x as f64,
-            ans: claw_machine.prize.x as f64 + 10000000000000.0
+            ans: claw_machine.prize.x as f64 + 10000000000000.0,
         };
 
-        let y_equation = Equation::<f64>{
+        let y_equation = Equation::<f64> {
             x: claw_machine.button_a.y as f64,
             y: claw_machine.button_b.y as f64,
-            ans: claw_machine.prize.y as f64 + 10000000000000.0
+            ans: claw_machine.prize.y as f64 + 10000000000000.0,
         };
 
         let (x, y) = cramers_rule::<f64>(&x_equation, &y_equation);
