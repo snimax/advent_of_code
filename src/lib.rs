@@ -1,6 +1,6 @@
+use std::fs;
 use std::io::Error;
 use std::ops::{Add, Div, Mul, Sub};
-use std::fs;
 
 pub fn parse_file(file: &str) -> Result<String, Error> {
     fs::read_to_string(file)
@@ -40,6 +40,17 @@ impl Sub for Pos {
         Self {
             x: self.x - rhs.x,
             y: self.y - rhs.y,
+        }
+    }
+}
+
+impl Mul<i32> for Pos {
+    type Output = Self;
+
+    fn mul(self, rhs: i32) -> Self::Output {
+        Self {
+            x: self.x * rhs,
+            y: self.y * rhs,
         }
     }
 }
