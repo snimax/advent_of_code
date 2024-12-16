@@ -62,6 +62,42 @@ pub const DOWN: Dir = Dir { x: 0, y: 1 };
 pub const LEFT: Dir = Dir { x: -1, y: 0 };
 pub const RIGHT: Dir = Dir { x: 1, y: 0 };
 
+pub const DIRECTIONS: [Dir; 4] = [UP, DOWN, LEFT, RIGHT];
+
+pub fn get_opposite_dir(dir: &Dir) -> Dir {
+    if *dir == UP {
+        return DOWN;
+    }
+    if *dir == DOWN {
+        return UP;
+    }
+    if *dir == LEFT {
+        return RIGHT;
+    }
+    if *dir == RIGHT {
+        return LEFT;
+    }
+
+    panic!("Got unknown direction {dir:?}");
+}
+
+pub fn get_dir_name(dir: &Dir) -> &str {
+    if *dir == UP {
+        return "Down";
+    }
+    if *dir == DOWN {
+        return "Up";
+    }
+    if *dir == LEFT {
+        return "Right";
+    }
+    if *dir == RIGHT {
+        return "Left";
+    }
+
+    panic!("Got unknown direction {dir:?}");
+}
+
 #[derive(Clone)]
 pub struct Map<T: Copy> {
     pub map: Vec<Vec<T>>,

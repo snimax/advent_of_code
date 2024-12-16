@@ -27,6 +27,7 @@ fn main() {
             Ok(13) => day13::solve(),
             Ok(14) => day14::solve(),
             Ok(15) => day15::solve(),
+            Ok(16) => day16::solve(),
             Ok(day_num) => println!("Day {day_num} not implemented yet"),
             Err(e) => panic!("Could not parse argument {e:?}"),
         },
