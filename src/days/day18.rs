@@ -1,4 +1,4 @@
-use advent_of_code_2024::{parse_file, parse_lines, Pos, DOWN, LEFT, RIGHT, UP, DIRECTIONS};
+use advent_of_code_2024::{parse_file, parse_lines, Pos, DIRECTIONS};
 use std::collections::{HashMap, VecDeque};
 
 pub fn solve() {
@@ -6,7 +6,10 @@ pub fn solve() {
         let lines = parse_lines(&line_string);
         let byte_positions = parse_byte_positions(&lines);
         let end_pos = Pos { x: 70, y: 70 };
-        println!("Part1 solution: {}", part1(&byte_positions[..1024], &end_pos));
+        println!(
+            "Part1 solution: {}",
+            part1(&byte_positions[..1024], &end_pos)
+        );
         use std::time::Instant;
         let now = Instant::now();
         println!("Part2 solution: {}", part2(&byte_positions, &end_pos));
@@ -19,8 +22,7 @@ pub fn solve() {
 
 fn parse_byte_positions(lines: &[String]) -> Vec<Pos> {
     let mut bytes = Vec::new();
-    for line in lines.iter()
-    {
+    for line in lines.iter() {
         let mut num_str = line.split(",");
         let x = num_str.next().unwrap().parse::<i32>().unwrap();
         let y = num_str.next().unwrap().parse::<i32>().unwrap();
@@ -31,7 +33,6 @@ fn parse_byte_positions(lines: &[String]) -> Vec<Pos> {
 }
 
 fn find_path(byte_positions: &[Pos], end_pos: &Pos) -> HashMap<Pos, usize> {
-
     let mut queue = VecDeque::new();
     let mut visited = HashMap::new();
     queue.push_back((Pos { x: 0, y: 0 }, 0_usize));
@@ -49,8 +50,7 @@ fn find_path(byte_positions: &[Pos], end_pos: &Pos) -> HashMap<Pos, usize> {
         for direction in DIRECTIONS.iter() {
             let new_pos = curr_pos.clone() + direction.clone();
 
-            if new_pos.x < 0 || new_pos.y < 0
-                || new_pos.x > end_pos.x || new_pos.y > end_pos.y {
+            if new_pos.x < 0 || new_pos.y < 0 || new_pos.x > end_pos.x || new_pos.y > end_pos.y {
                 continue;
             }
 
@@ -68,9 +68,7 @@ fn find_path(byte_positions: &[Pos], end_pos: &Pos) -> HashMap<Pos, usize> {
 fn get_path(visited: &HashMap<Pos, usize>, end_pos: &Pos) -> Option<Vec<Pos>> {
     let mut path = Vec::new();
 
-    if visited.get(&end_pos).is_none() {
-        return None;
-    }
+    visited.get(end_pos)?;
 
     let mut curr_pos = end_pos.clone();
     while curr_pos != (Pos { x: 0, y: 0 }) {
@@ -95,13 +93,11 @@ fn get_path(visited: &HashMap<Pos, usize>, end_pos: &Pos) -> Option<Vec<Pos>> {
 }
 
 fn part1(byte_positions: &[Pos], end_pos: &Pos) -> usize {
-
     let visited = find_path(byte_positions, end_pos);
-    visited.get(&end_pos).unwrap().clone()
+    *visited.get(end_pos).unwrap()
 }
 
 fn part2(byte_positions: &[Pos], end_pos: &Pos) -> String {
-
     let mut i = 1;
     loop {
         let new_byte_positions = byte_positions[..i].to_vec();
@@ -113,9 +109,9 @@ fn part2(byte_positions: &[Pos], end_pos: &Pos) -> String {
                 j += 1;
             }
             i = j;
-
         } else {
-            let str = byte_positions[i - 1].x.to_string() + "," + &byte_positions[i - 1].y.to_string();
+            let str =
+                byte_positions[i - 1].x.to_string() + "," + &byte_positions[i - 1].y.to_string();
             return str;
         }
 
