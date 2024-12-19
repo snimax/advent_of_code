@@ -1,5 +1,5 @@
 use advent_of_code_2024::{parse_file, parse_lines};
-use std::thread;
+use std::collections::HashMap;
 use std::time::Instant;
 
 pub fn solve() {
@@ -7,15 +7,13 @@ pub fn solve() {
         let lines = parse_lines(&line_string);
         let (available_patterns, patterns_to_make) = parse_towels(&lines);
         let now = Instant::now();
-        println!(
-            "Part1 solution: {}",
-            part1(&available_patterns, &patterns_to_make)
-        );
+        let possible_patterns = part1(&available_patterns, &patterns_to_make);
+        println!("Part1 solution: {}", possible_patterns.len());
         let elapsed = now.elapsed();
         println!("{elapsed:?}");
         println!(
             "Part2 solution: {}",
-            part2(&available_patterns, &patterns_to_make)
+            part2(&available_patterns, &possible_patterns)
         );
     } else {
         println!("Could not parse file");
@@ -62,27 +60,6 @@ fn parse_towels(lines: &[String]) -> (Vec<Towel>, Vec<Towel>) {
     (available_towel_patterns, patterns_to_make)
 }
 
-// fn make_pattern(pattern: &[Color], available_patterns: &[Towel]) -> Option<()> {
-//     if pattern.len() == 0 {
-//         return Some(());
-//     }
-
-//     for available_pattern in available_patterns {
-//         let pattern_len = available_pattern.len();
-//         if pattern.len() < pattern_len {
-//             continue;
-//         }
-//         if pattern[..pattern_len] == *available_pattern {
-//             let res = make_pattern(&pattern[pattern_len..], available_patterns);
-//             if res.is_some() {
-//                 return res;
-//             }
-//         }
-//     }
-
-//     None
-// }
-
 fn make_pattern(idx: usize, pattern: &[Color], available_patterns: &[Towel]) -> Option<()> {
     if idx == pattern.len() {
         return Some(());
@@ -106,9 +83,7 @@ fn make_pattern(idx: usize, pattern: &[Color], available_patterns: &[Towel]) -> 
     None
 }
 
-fn part1(available_patterns: &[Towel], patterns_to_make: &[Towel]) -> usize {
-    let len = patterns_to_make.len();
-
+fn part1(available_patterns: &[Towel], patterns_to_make: &[Towel]) -> Vec<Towel> {
     let single_colors_available: Towel = available_patterns
         .iter()
         .filter(|a| a.len() == 1)
@@ -132,20 +107,62 @@ fn part1(available_patterns: &[Towel], patterns_to_make: &[Towel]) -> usize {
         .cloned()
         .collect();
 
-    // let patterns_to_test = available_patterns;
-
     patterns_to_make
         .iter()
         .enumerate()
         .filter_map(|(idx, pattern)| {
-            println!("{idx}/{len}");
-            make_pattern(0, pattern, &patterns_to_test)
-        })
-        .count()
+            let res = make_pattern(0, pattern, &patterns_to_test);
+            if res.is_some()
+            {
+                println!("{idx}");
+                Some(pattern.clone())
+            } else {None}
+        }).collect()
+}
+
+fn count_all_possible_patterns(idx: usize, pattern: &[Color], available_patterns: &[Towel], memoization: &mut HashMap<usize, usize>) -> usize {
+    if let Some(val) = memoization.get(&idx) {
+        return *val;
+    }
+
+    if idx == pattern.len() {
+        return 1;
+    }
+
+    let mut result_count = 0;
+
+    let left_to_match = pattern.len() - idx;
+    for available_pattern in available_patterns {
+        let pattern_len = available_pattern.len();
+        if left_to_match < pattern_len {
+            continue;
+        }
+
+        if pattern[idx..(idx + pattern_len)] == *available_pattern {
+            result_count += count_all_possible_patterns(idx + pattern_len, pattern, available_patterns, memoization);
+        }
+    }
+
+    if let Some(val) = memoization.get_mut(&idx) {
+        *val += result_count;
+    } else {
+        memoization.insert(idx, result_count);
+    }
+
+    result_count
 }
 
 fn part2(available_patterns: &[Towel], patterns_to_make: &[Towel]) -> usize {
-    0
+    let len = patterns_to_make.len();
+
+    patterns_to_make
+    .iter()
+    .enumerate()
+    .fold(0, |acc, (idx, pattern)| {
+        println!("{idx}/{len}");
+        let mut memoization = HashMap::new();
+        acc + count_all_possible_patterns(0, pattern, &available_patterns, &mut memoization)
+    })
 }
 
 #[cfg(test)]
@@ -171,7 +188,7 @@ bbrgwb"#;
     #[test]
     fn test_part1() -> Result<(), String> {
         let (available_patterns, patterns_to_make) = get_input();
-        assert_eq!(part1(&available_patterns, &patterns_to_make), 6);
+        assert_eq!(part1(&available_patterns, &patterns_to_make).len(), 6);
 
         Ok(())
     }
@@ -179,7 +196,7 @@ bbrgwb"#;
     #[test]
     fn test_part2() -> Result<(), String> {
         let (available_patterns, patterns_to_make) = get_input();
-        assert_eq!(part2(&available_patterns, &patterns_to_make), 0);
+        assert_eq!(part2(&available_patterns, &patterns_to_make), 16);
 
         Ok(())
     }
