@@ -6,7 +6,7 @@ pub fn solve() {
         let lines = parse_lines(&line_string);
         let (start_pos, end_pos, map) = parse_map(&lines);
         println!("Part1 solution: {}", part1(&start_pos, &end_pos, &map, 100));
-        println!("Part2 solution: {}", part2(&start_pos, &end_pos, &map));
+        println!("Part2 solution: {}", part2(&start_pos, &end_pos, &map, 100));
     } else {
         println!("Could not parse file");
     }
@@ -84,41 +84,59 @@ fn find_path_length(start_pos: &Pos, end_pos: &Pos, map: &Map<Space>) -> Vec<(Po
     path_length
 }
 
-fn part1(start_pos: &Pos, end_pos: &Pos, map: &Map<Space>, time_to_save: usize) -> usize {
+fn get_shortcuts(
+    start_pos: &Pos,
+    end_pos: &Pos,
+    map: &Map<Space>,
+    max_cheat_length: i32,
+) -> HashMap<usize, usize> {
     let path = find_path_length(end_pos, start_pos, map);
-    println!("Time to beat: {:?}", path[0]);
     let lookup = path.iter().cloned().collect::<HashMap<Pos, usize>>();
     let mut shortcut_len = HashMap::new();
+    let mut novel_cheats = HashSet::new();
     for (pos, steps_to_end) in path.iter() {
-        for dir in DIRECTIONS {
-            let wall_pos = dir.clone() + pos.clone();
-            let shortcut_pos = dir * 2 + pos.clone();
-            if let Some(shortcut_len_to_end) = lookup.get(&shortcut_pos) {
-                if map.get(&wall_pos) == Space::Wall && steps_to_end > shortcut_len_to_end {
-                    let diff = steps_to_end - (shortcut_len_to_end + 2); // 2 for the steps walked during the cheat
-                                                                         // println!("{pos:?}, {shortcut_pos:?}, {diff}");
-                    if let Some(val) = shortcut_len.get_mut(&diff) {
-                        *val += 1;
-                    } else {
-                        shortcut_len.insert(diff, 1);
+        for y in -max_cheat_length..=max_cheat_length {
+            for x in -max_cheat_length..=max_cheat_length {
+                let cheat_length = (i32::abs(x) + i32::abs(y)) as usize;
+                if cheat_length > (max_cheat_length as usize) || cheat_length == 0 {
+                    continue;
+                }
+                let shortcut_pos = pos.clone() + Pos { x, y };
+
+                if let Some(shortcut_len_to_end) = lookup.get(&shortcut_pos) {
+                    if steps_to_end > shortcut_len_to_end {
+                        let diff = steps_to_end - (shortcut_len_to_end + cheat_length);
+
+                        if novel_cheats.insert((pos.clone(), shortcut_pos.clone())) {
+                            if let Some(val) = shortcut_len.get_mut(&diff) {
+                                *val += 1;
+                            } else {
+                                shortcut_len.insert(diff, 1);
+                            }
+                        }
                     }
                 }
             }
         }
     }
-    // println!("{shortcut_len:?}");
 
-    for (k, v) in shortcut_len.iter() {
-        println!("There are {v} cheats that save {k} picoseconds.");
-    }
+    shortcut_len
+}
+
+fn part1(start_pos: &Pos, end_pos: &Pos, map: &Map<Space>, time_to_save: usize) -> usize {
+    let shortcut_len = get_shortcuts(start_pos, end_pos, map, 2);
 
     shortcut_len.iter().fold(0, |acc, (k, v)| {
         acc + if *k >= time_to_save { *v } else { 0 }
     })
 }
 
-fn part2(_start_pos: &Pos, _end_pos: &Pos, _map: &Map<Space>) -> usize {
-    0
+fn part2(start_pos: &Pos, end_pos: &Pos, map: &Map<Space>, time_to_save: usize) -> usize {
+    let shortcut_len = get_shortcuts(start_pos, end_pos, map, 20);
+
+    shortcut_len.iter().fold(0, |acc, (k, v)| {
+        acc + if *k >= time_to_save { *v } else { 0 }
+    })
 }
 
 #[cfg(test)]
@@ -150,6 +168,7 @@ mod tests {
     fn test_part1() -> Result<(), String> {
         let (start_pos, end_pos, map) = get_map();
         assert_eq!(part1(&start_pos, &end_pos, &map, 2), 44);
+        assert_eq!(part1(&start_pos, &end_pos, &map, 20), 5);
 
         Ok(())
     }
@@ -157,7 +176,7 @@ mod tests {
     #[test]
     fn test_part2() -> Result<(), String> {
         let (start_pos, end_pos, map) = get_map();
-        assert_eq!(part2(&start_pos, &end_pos, &map), 31);
+        assert_eq!(part2(&start_pos, &end_pos, &map, 50), 285);
 
         Ok(())
     }
