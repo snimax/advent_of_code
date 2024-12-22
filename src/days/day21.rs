@@ -1,5 +1,3 @@
-use core::num;
-
 use advent_of_code_2024::{parse_file, parse_lines, Pos};
 
 pub fn solve() {
@@ -51,14 +49,14 @@ fn get_numpad_sequence(code_str: &str) -> String {
         let horizontal_moves = match diff.x.cmp(&0) {
             std::cmp::Ordering::Less => "<",
             std::cmp::Ordering::Equal => "",
-            std::cmp::Ordering::Greater => ">"
+            std::cmp::Ordering::Greater => ">",
         }
         .repeat(diff.x.unsigned_abs() as usize);
 
         let vertical_moves = match diff.y.cmp(&0) {
             std::cmp::Ordering::Less => "^",
             std::cmp::Ordering::Equal => "",
-            std::cmp::Ordering::Greater => "v"
+            std::cmp::Ordering::Greater => "v",
         }
         .repeat(diff.y.unsigned_abs() as usize);
         // if curr_button_pos == (Pos {x:1, y:2}) && target_button_pos == (Pos {x:2, y:3}) {
@@ -92,25 +90,23 @@ fn get_dirpad_sequence(sequence_str: &str) -> String {
         let horizontal_moves = match diff.x.cmp(&0) {
             std::cmp::Ordering::Less => "<",
             std::cmp::Ordering::Equal => "",
-            std::cmp::Ordering::Greater => ">"
+            std::cmp::Ordering::Greater => ">",
         }
         .repeat(diff.x.unsigned_abs() as usize);
 
         let vertical_moves = match diff.y.cmp(&0) {
             std::cmp::Ordering::Less => "^",
             std::cmp::Ordering::Equal => "",
-            std::cmp::Ordering::Greater => "v"
+            std::cmp::Ordering::Greater => "v",
         }
         .repeat(diff.y.unsigned_abs() as usize);
 
         if !(curr_button_pos.y == 0 && target_button_pos.x == 0) {
             instruction_sequence.push_str(&horizontal_moves);
             instruction_sequence.push_str(&vertical_moves);
-
         } else if !(curr_button_pos.x == 0 && target_button_pos.y == 0) {
             instruction_sequence.push_str(&vertical_moves);
             instruction_sequence.push_str(&horizontal_moves);
-
         }
 
         instruction_sequence.push('A');
@@ -124,11 +120,10 @@ fn get_sequence_len(code_str: &str) -> usize {
     let radioactive_robot_sequence = get_dirpad_sequence(&numpad_robot_sequence);
     let frozen_robot_sequence = get_dirpad_sequence(&radioactive_robot_sequence);
 
-    frozen_robot_sequence.chars().filter(|c| !c.is_ascii_whitespace()).count()
-}
-
-fn get_filtered_len(s: &str) -> usize {
-    s.chars().filter(|c| !c.is_ascii_whitespace()).count()
+    frozen_robot_sequence
+        .chars()
+        .filter(|c| !c.is_ascii_whitespace())
+        .count()
 }
 
 fn get_code_val(code_str: &str) -> usize {
@@ -148,7 +143,10 @@ fn get_generic_sequence_len(code_str: &str, num_robots: usize) -> usize {
         curr_sequence = get_dirpad_sequence(&curr_sequence);
     }
 
-    curr_sequence.chars().filter(|c| !c.is_ascii_whitespace()).count()
+    curr_sequence
+        .chars()
+        .filter(|c| !c.is_ascii_whitespace())
+        .count()
 }
 
 fn part2(input: &[String]) -> usize {
@@ -181,37 +179,38 @@ mod tests {
 
     #[test]
     fn test_get_numpad_dir() {
-        assert_eq!(get_filtered_len(&get_numpad_sequence("029A")), 12);
+        assert_eq!(get_numpad_sequence("029A").len(), 12);
     }
 
     #[test]
     fn test_get_first_dirpad_dir() {
         let numpad_sequence = get_numpad_sequence("029A");
-        assert_eq!(get_filtered_len(&get_dirpad_sequence(&numpad_sequence)), 28);
+        assert_eq!(get_dirpad_sequence(&numpad_sequence).len(), 28);
     }
 
     #[test]
     fn test_get_second_dirpad_dir() {
         let numpad_sequence = get_numpad_sequence("029A");
         let dirpad_sequence = get_dirpad_sequence(&numpad_sequence);
-        assert_eq!(get_filtered_len(&get_dirpad_sequence(&dirpad_sequence)), 68);
+        assert_eq!(get_dirpad_sequence(&dirpad_sequence).len(), 68);
     }
 
     #[test]
     fn test_get_second_dirpad_dir2() {
         let numpad_sequence = get_numpad_sequence("62A");
         let dirpad_sequence = get_dirpad_sequence(&numpad_sequence);
-        assert_eq!(get_filtered_len(&get_dirpad_sequence(&dirpad_sequence)), "v<<A>>^AAvA^A<vA<AA>>^AvA^A<Av>A^Av<<A>A^>AvA^A<A>A".len());
+        assert_eq!(
+            get_dirpad_sequence(&dirpad_sequence).len(),
+            "v<<A>>^AAvA^A<vA<AA>>^AvA^A<Av>A^Av<<A>A^>AvA^A<A>A".len()
+        );
     }
 
     #[test]
     fn test_get_second_dirpad_dir3() {
         let numpad_sequence = get_numpad_sequence("26A");
         let dirpad_sequence = get_dirpad_sequence(&numpad_sequence);
-        assert_eq!(get_filtered_len(&get_dirpad_sequence(&dirpad_sequence)), 57);
+        assert_eq!(get_dirpad_sequence(&dirpad_sequence).len(), 57);
     }
-
-
 
     #[test]
     fn test_part2() -> Result<(), String> {
