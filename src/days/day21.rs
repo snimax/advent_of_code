@@ -1,4 +1,5 @@
 use advent_of_code_2024::{parse_file, parse_lines, Pos};
+use std::{collections::HashMap, ffi::IntoStringError};
 
 pub fn solve() {
     if let Ok(line_string) = parse_file("Inputs/day21.txt") {
@@ -59,7 +60,7 @@ fn get_numpad_sequence(code_str: &str) -> String {
             std::cmp::Ordering::Greater => "v",
         }
         .repeat(diff.y.unsigned_abs() as usize);
-        // if curr_button_pos == (Pos {x:1, y:2}) && target_button_pos == (Pos {x:2, y:3}) {
+
         if curr_button_pos.x == 1 && target_button_pos.y == 3 && target_button_pos.y != 0 {
             instruction_sequence.push_str(&vertical_moves);
             instruction_sequence.push_str(&horizontal_moves);
@@ -122,7 +123,6 @@ fn get_sequence_len(code_str: &str) -> usize {
 
     frozen_robot_sequence
         .chars()
-        .filter(|c| !c.is_ascii_whitespace())
         .count()
 }
 
@@ -136,22 +136,70 @@ fn part1(input: &[String]) -> usize {
     })
 }
 
+fn get_dirpad_sequence1(sequence_str: &str, memoization: &mut HashMap<(Pos, Pos), String>) -> String {
+    let mut curr_button_pos = get_dir_button_coord('A');
+    let mut instruction_sequence = String::with_capacity(sequence_str.len() * 4);
+
+    for c in sequence_str.chars() {
+        let target_button_pos = get_dir_button_coord(c);
+        let diff = target_button_pos.clone() - curr_button_pos.clone();
+
+        if let Some(str) = memoization.get(&(curr_button_pos.clone(), target_button_pos.clone())) {
+            instruction_sequence.push_str(str);
+            continue;
+        }
+
+        let horizontal_moves = match diff.x.cmp(&0) {
+            std::cmp::Ordering::Less => "<",
+            std::cmp::Ordering::Equal => "",
+            std::cmp::Ordering::Greater => ">",
+        }
+        .repeat(diff.x.unsigned_abs() as usize);
+
+        let vertical_moves = match diff.y.cmp(&0) {
+            std::cmp::Ordering::Less => "^",
+            std::cmp::Ordering::Equal => "",
+            std::cmp::Ordering::Greater => "v",
+        }
+        .repeat(diff.y.unsigned_abs() as usize);
+
+        let mut curr_sequence_of_moves = String::with_capacity(4);
+
+        if !(curr_button_pos.y == 0 && target_button_pos.x == 0) {
+            curr_sequence_of_moves.push_str(&horizontal_moves);
+            curr_sequence_of_moves.push_str(&vertical_moves);
+        } else if !(curr_button_pos.x == 0 && target_button_pos.y == 0) {
+            curr_sequence_of_moves.push_str(&vertical_moves);
+            curr_sequence_of_moves.push_str(&horizontal_moves);
+        }
+
+        curr_sequence_of_moves.push('A');
+
+        memoization.insert((curr_button_pos.clone(), target_button_pos.clone()), curr_sequence_of_moves.clone());
+        instruction_sequence.push_str(&curr_sequence_of_moves);
+
+        curr_button_pos = target_button_pos;
+    }
+    instruction_sequence
+}
+
 fn get_generic_sequence_len(code_str: &str, num_robots: usize) -> usize {
     let mut curr_sequence = get_numpad_sequence(code_str);
+    let mut memoization = HashMap::new();
 
-    for _ in 0..num_robots {
-        curr_sequence = get_dirpad_sequence(&curr_sequence);
+    for i in 0..num_robots {
+        println!("{i}: {}", curr_sequence.len());
+        curr_sequence = get_dirpad_sequence1(&curr_sequence, &mut memoization);
     }
 
     curr_sequence
         .chars()
-        .filter(|c| !c.is_ascii_whitespace())
         .count()
 }
 
 fn part2(input: &[String]) -> usize {
     input.iter().fold(0, |acc, line| {
-        acc + get_generic_sequence_len(line, 2) * get_code_val(line)
+        acc + get_generic_sequence_len(line, 25) * get_code_val(line)
     })
 }
 
