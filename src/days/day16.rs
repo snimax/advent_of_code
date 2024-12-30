@@ -1,7 +1,5 @@
-use advent_of_code_2024::{
-    get_dir_name, parse_file, parse_lines, Dir, Map, Pos, DIRECTIONS, DOWN, LEFT, RIGHT, UP,
-};
-use std::collections::{HashMap, HashSet, VecDeque};
+use advent_of_code_2024::{parse_file, parse_lines, get_opposite_dir, Dir, Map, Pos, DIRECTIONS, DOWN, LEFT, RIGHT, UP};
+use std::{cmp::Ordering, collections::{BinaryHeap, HashMap, HashSet, VecDeque}, usize};
 
 pub fn solve() {
     if let Ok(line_string) = parse_file("Inputs/day16.txt") {
@@ -104,7 +102,8 @@ fn find_straighetest_path(
             queue.push_back((neighbor_ccw, ccw, steps + 1001));
         }
     }
-    visited.get(&end_pos).unwrap().1
+
+    visited.get(end_pos).unwrap().1
 }
 
 fn get_neighbor_directions(pos: &Pos, map: &Map<Space>) -> Vec<Dir> {
@@ -114,164 +113,35 @@ fn get_neighbor_directions(pos: &Pos, map: &Map<Space>) -> Vec<Dir> {
             let pos = pos.clone() + (*dir).clone();
             map.get(&pos) == Space::Empty
         })
-        .map(|dir| dir.clone())
+        .cloned()
         .collect()
 }
 
-fn next_intersection_length(
-    start_pos: &Pos,
-    start_dir: &Dir,
-    intersections: &HashSet<Pos>,
-    map: &Map<Space>,
-) -> (Pos, Dir, usize) {
-    let mut queue = VecDeque::new();
-    queue.push_back((start_pos.clone(), start_dir.clone(), 0));
-    while let Some((curr_pos, curr_dir, steps)) = queue.pop_front() {
-        if map.get(&curr_pos) == Space::Wall {
-            continue;
-        }
-
-        if intersections.contains(&curr_pos) && steps > 0 {
-            return (curr_pos, curr_dir, steps);
-        }
-
-        let (cw, ccw) = rotate(&curr_dir);
-        let neighbor_cw = curr_pos.clone() + cw.clone();
-        let neighbor_ccw = curr_pos.clone() + ccw.clone();
-        let next_pos = curr_pos.clone() + curr_dir.clone();
-
-        if map.get(&next_pos) != Space::Wall {
-            queue.push_back((next_pos, curr_dir.clone(), steps + 1));
-        }
-        if map.get(&neighbor_cw) != Space::Wall {
-            queue.push_back((neighbor_cw, cw, steps + 1001));
-        }
-        if map.get(&neighbor_ccw) != Space::Wall {
-            queue.push_back((neighbor_ccw, ccw, steps + 1001));
-        }
-    }
-
-    panic!(
-        "Got to unreachable pos from {start_pos:?}, with direction {}",
-        get_dir_name(start_dir)
-    );
-}
-
-type Graph = HashMap<Pos, HashMap<Dir, (Pos, Dir, usize)>>;
-
-fn build_graph(start_pos: &Dir, end_pos: &Pos, map: &Map<Space>) -> Graph {
-    let mut intersections = HashSet::new();
-    // make sure start pos and end pos is in the set of intersections
-    intersections.insert(start_pos.clone());
-    intersections.insert(end_pos.clone());
-
-    for row in 1..map.size_y - 1 {
-        for col in 1..map.size_x - 1 {
-            let curr_pos = Pos {
-                x: row as i32,
-                y: col as i32,
+fn _print_map(map: &Map<Space>, visited: &HashSet<Pos>, curr_pos: &Pos) {
+    for row in 0..map.size_y {
+        for col in 0..map.size_x {
+            let pos = Pos {
+                x: col as i32,
+                y: row as i32,
             };
-            if map.get(&curr_pos) == Space::Empty
-                && get_neighbor_directions(&curr_pos, map).len() != 2
-            {
-                intersections.insert(curr_pos);
+            if pos == *curr_pos {
+                print!("X");
+                continue;
+            }
+            match map.get(&pos) {
+                Space::Wall => print!("#"),
+                Space::Empty => {
+                    if visited.contains(&pos) {
+                        print!("O");
+                    } else {
+                        print!(".");
+                    }
+                }
             }
         }
-    }
-
-    let mut graph = Graph::new();
-
-    for intersection in intersections.iter() {
-        let neighbor_dirs = get_neighbor_directions(intersection, map);
-
-        for neighbor_dir in neighbor_dirs.iter() {
-            let (pos, dir, steps) =
-                next_intersection_length(intersection, neighbor_dir, &intersections, map);
-
-            if let Some(set) = graph.get_mut(&intersection) {
-                set.insert(neighbor_dir.clone(), (pos.clone(), dir.clone(), steps));
-            } else {
-                let mut set = HashMap::new();
-                set.insert(intersection.clone(), (pos.clone(), dir.clone(), steps));
-                graph.insert(intersection.clone(), set);
-            }
-
-            if let Some(set) = graph.get_mut(&pos) {
-                set.insert(
-                    dir.clone(),
-                    (intersection.clone(), neighbor_dir.clone(), steps),
-                );
-            } else {
-                let mut set = HashMap::new();
-                set.insert(dir, (intersection.clone(), neighbor_dir.clone(), steps));
-                graph.insert(pos, set);
-            }
-        }
-    }
-
-    for (k, v) in graph.iter() {
-        println!("{k:?}");
-        println!("  {v:?}");
         println!();
     }
-    graph
-}
-
-struct Goals {
-    cost: usize,
-    end: Pos,
-}
-
-fn find_path(
-    cost: usize,
-    curr_pos: &Pos,
-    curr_dir: &Dir,
-    goals: &Goals,
-    graph: &Graph,
-    used_paths: &mut HashSet<(Pos, Dir)>,
-    in_optimal_paths: &mut HashSet<(Pos, Dir)>,
-) -> bool {
-    if *curr_pos == goals.end {
-        return if cost == goals.cost {
-            in_optimal_paths.insert((curr_pos.clone(), curr_dir.clone()));
-            true
-        } else { false };
-    }
-
-    if let Some(paths) = graph.get(curr_pos) {
-        for (direction, (pos, dir, steps)) in paths {
-            if used_paths.insert((curr_pos.clone(), direction.clone())) {
-                let mut curr_cost = cost + steps;
-                if direction != curr_dir {
-                    curr_cost += 1000;
-                }
-
-                let optimal_path = find_path(curr_cost, pos, dir, goals, graph, used_paths, in_optimal_paths);
-                if optimal_path {
-                    in_optimal_paths.insert((pos.clone(), curr_dir.clone()));
-                }
-            }
-        }
-    }
-
-    false
-}
-
-fn find_optimal_paths(start_pos: &Pos, goals: &Goals, graph: &Graph) -> usize {
-    let mut used_paths = HashSet::new();
-    let mut in_optimal_paths = HashSet::new();
-    find_path(
-        0,
-        start_pos,
-        &RIGHT,
-        goals,
-        graph,
-        &mut used_paths,
-        &mut in_optimal_paths,
-    );
-
-    println!("{in_optimal_paths:?}");
-    0
+    println!();
 }
 
 fn part1(start_pos: &Pos, end_pos: &Pos, map: &Map<Space>) -> usize {
@@ -279,10 +149,121 @@ fn part1(start_pos: &Pos, end_pos: &Pos, map: &Map<Space>) -> usize {
 }
 
 fn part2(start_pos: &Pos, end_pos: &Pos, map: &Map<Space>) -> usize {
-    let optimal_path_cost = find_straighetest_path(start_pos, &RIGHT, end_pos, map);
-    let graph = build_graph(start_pos, end_pos, map);
-    let goals = Goals{cost: optimal_path_cost, end: end_pos.to_owned()};
-    find_optimal_paths( start_pos, &goals, &graph)
+    let optimal_paths = find_optimal_paths(start_pos, end_pos, map);
+
+    let mut unique_tiles = HashSet::new();
+    for path in optimal_paths {
+        for (tile, _) in path {
+            unique_tiles.insert(tile);
+        }
+    }
+
+    unique_tiles.len()
+}
+
+#[derive(Debug, PartialEq, Eq, Clone)]
+struct Node {
+    pos: Pos,
+    dir: Dir,
+    cost: usize
+}
+
+impl Ord for Node {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        other.cost.cmp(&self.cost)
+    }
+}
+
+impl PartialOrd for Node {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+fn find_optimal_paths(start_pos: &Pos, end_pos: &Pos, map: &Map<Space>) -> Vec<Vec<(Pos, Dir)>> {
+    let mut best_costs_found: HashMap<(Pos, Dir), usize> = HashMap::new();
+    let mut predecessors: HashMap<(Pos, Dir), Vec<(Pos, Dir)>> = HashMap::new();
+    let mut smallest_cost = usize::MAX;
+
+    let mut queue = BinaryHeap::new();
+    queue.push(Node {
+        pos: start_pos.clone(),
+        dir: RIGHT,
+        cost: 0
+    });
+
+    while let Some(Node {pos: curr_pos, dir: curr_dir, cost}) = queue.pop() {
+        if cost > *best_costs_found.get(&(curr_pos.clone(), curr_dir.clone())).unwrap_or(&usize::MAX) {
+            continue;
+        }
+
+        if curr_pos == *end_pos {
+            smallest_cost = smallest_cost.min(cost);
+        }
+
+        for d in DIRECTIONS.iter() {
+            let new_pos = curr_pos.clone() + d.clone();
+            if map.get(&new_pos) == Space::Wall {
+                continue;
+            }
+
+            let mut new_cost = cost + 1;
+            let (cw, ccw) = rotate(&curr_dir);
+            if *d == cw || *d == ccw {
+                new_cost += 1000;
+            }
+
+            if new_cost > smallest_cost && curr_pos != *end_pos {
+                continue;
+            }
+
+            if match best_costs_found.get(&(new_pos.clone(), d.clone())) {
+                Some(cached_cost) => match new_cost.cmp(cached_cost) {
+                    Ordering::Less => true,
+                    Ordering::Equal => false,
+                    Ordering::Greater => continue,
+                }
+                None => true,
+            } {
+                let key = (new_pos.clone(), d.clone());
+                best_costs_found.insert(key.clone(), new_cost);
+                predecessors.insert(key, vec![(curr_pos.clone(), curr_dir.clone())]);
+            } else {
+                if let Some(p) = predecessors.get_mut(&(new_pos.clone(), d.clone())) {
+                    if !p.contains(&(curr_pos.clone(), curr_dir.clone())) {
+                        p.push((curr_pos.clone(), curr_dir.clone()));
+                    }
+                }
+            }
+
+            queue.push(Node { pos: new_pos, dir: d.clone(), cost: new_cost });
+        }
+    }
+
+    let mut optimal_paths = Vec::new();
+    let mut stack = VecDeque::new();
+
+    for d in DIRECTIONS.iter() {
+        if best_costs_found.contains_key(&(end_pos.clone(), d.clone())) {
+            stack.push_back((vec![(end_pos.clone(), d.clone())], (end_pos.clone(), d.clone())));
+        }
+    }
+
+    while let Some((curr_path, curr_node)) = stack.pop_back() {
+        if curr_node == (start_pos.clone(), RIGHT) {
+            let mut complete_path = curr_path.clone();
+            complete_path.reverse();
+            optimal_paths.push(complete_path);
+        } else if let Some(prev_nodes) = predecessors.get(&curr_node) {
+            for (prev_pos, prev_dir) in prev_nodes {
+                let mut new_path = curr_path.clone();
+                new_path.push((prev_pos.clone(), prev_dir.clone()));
+                stack.push_back((new_path, (prev_pos.clone(), prev_dir.clone())));
+            }
+        }
+    }
+
+    optimal_paths
 }
 
 #[cfg(test)]
