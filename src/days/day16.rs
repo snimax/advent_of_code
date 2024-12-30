@@ -1,10 +1,9 @@
 use advent_of_code_2024::{
-    get_opposite_dir, parse_file, parse_lines, Dir, Map, Pos, DIRECTIONS, DOWN, LEFT, RIGHT, UP,
+    parse_file, parse_lines, Dir, Map, Pos, DIRECTIONS, DOWN, LEFT, RIGHT, UP,
 };
 use std::{
     cmp::Ordering,
     collections::{BinaryHeap, HashMap, HashSet, VecDeque},
-    usize,
 };
 
 pub fn solve() {
@@ -112,44 +111,6 @@ fn find_straighetest_path(
     visited.get(end_pos).unwrap().1
 }
 
-fn get_neighbor_directions(pos: &Pos, map: &Map<Space>) -> Vec<Dir> {
-    DIRECTIONS
-        .iter()
-        .filter(|dir| {
-            let pos = pos.clone() + (*dir).clone();
-            map.get(&pos) == Space::Empty
-        })
-        .cloned()
-        .collect()
-}
-
-fn _print_map(map: &Map<Space>, visited: &HashSet<Pos>, curr_pos: &Pos) {
-    for row in 0..map.size_y {
-        for col in 0..map.size_x {
-            let pos = Pos {
-                x: col as i32,
-                y: row as i32,
-            };
-            if pos == *curr_pos {
-                print!("X");
-                continue;
-            }
-            match map.get(&pos) {
-                Space::Wall => print!("#"),
-                Space::Empty => {
-                    if visited.contains(&pos) {
-                        print!("O");
-                    } else {
-                        print!(".");
-                    }
-                }
-            }
-        }
-        println!();
-    }
-    println!();
-}
-
 fn part1(start_pos: &Pos, end_pos: &Pos, map: &Map<Space>) -> usize {
     find_straighetest_path(start_pos, &RIGHT, end_pos, map)
 }
@@ -243,11 +204,9 @@ fn find_optimal_paths(start_pos: &Pos, end_pos: &Pos, map: &Map<Space>) -> Vec<V
                 let key = (new_pos.clone(), d.clone());
                 best_costs_found.insert(key.clone(), new_cost);
                 predecessors.insert(key, vec![(curr_pos.clone(), curr_dir.clone())]);
-            } else {
-                if let Some(p) = predecessors.get_mut(&(new_pos.clone(), d.clone())) {
-                    if !p.contains(&(curr_pos.clone(), curr_dir.clone())) {
-                        p.push((curr_pos.clone(), curr_dir.clone()));
-                    }
+            } else if let Some(p) = predecessors.get_mut(&(new_pos.clone(), d.clone())) {
+                if !p.contains(&(curr_pos.clone(), curr_dir.clone())) {
+                    p.push((curr_pos.clone(), curr_dir.clone()));
                 }
             }
 

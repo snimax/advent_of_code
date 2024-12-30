@@ -1,5 +1,4 @@
 use advent_of_code_2024::{parse_file, parse_lines};
-use std::collections::HashMap;
 
 pub fn solve() {
     if let Ok(line_string) = parse_file("Inputs/day25.txt") {
