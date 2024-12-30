@@ -1,5 +1,11 @@
-use advent_of_code_2024::{parse_file, parse_lines, get_opposite_dir, Dir, Map, Pos, DIRECTIONS, DOWN, LEFT, RIGHT, UP};
-use std::{cmp::Ordering, collections::{BinaryHeap, HashMap, HashSet, VecDeque}, usize};
+use advent_of_code_2024::{
+    get_opposite_dir, parse_file, parse_lines, Dir, Map, Pos, DIRECTIONS, DOWN, LEFT, RIGHT, UP,
+};
+use std::{
+    cmp::Ordering,
+    collections::{BinaryHeap, HashMap, HashSet, VecDeque},
+    usize,
+};
 
 pub fn solve() {
     if let Ok(line_string) = parse_file("Inputs/day16.txt") {
@@ -165,7 +171,7 @@ fn part2(start_pos: &Pos, end_pos: &Pos, map: &Map<Space>) -> usize {
 struct Node {
     pos: Pos,
     dir: Dir,
-    cost: usize
+    cost: usize,
 }
 
 impl Ord for Node {
@@ -189,11 +195,20 @@ fn find_optimal_paths(start_pos: &Pos, end_pos: &Pos, map: &Map<Space>) -> Vec<V
     queue.push(Node {
         pos: start_pos.clone(),
         dir: RIGHT,
-        cost: 0
+        cost: 0,
     });
 
-    while let Some(Node {pos: curr_pos, dir: curr_dir, cost}) = queue.pop() {
-        if cost > *best_costs_found.get(&(curr_pos.clone(), curr_dir.clone())).unwrap_or(&usize::MAX) {
+    while let Some(Node {
+        pos: curr_pos,
+        dir: curr_dir,
+        cost,
+    }) = queue.pop()
+    {
+        if cost
+            > *best_costs_found
+                .get(&(curr_pos.clone(), curr_dir.clone()))
+                .unwrap_or(&usize::MAX)
+        {
             continue;
         }
 
@@ -222,7 +237,7 @@ fn find_optimal_paths(start_pos: &Pos, end_pos: &Pos, map: &Map<Space>) -> Vec<V
                     Ordering::Less => true,
                     Ordering::Equal => false,
                     Ordering::Greater => continue,
-                }
+                },
                 None => true,
             } {
                 let key = (new_pos.clone(), d.clone());
@@ -236,7 +251,11 @@ fn find_optimal_paths(start_pos: &Pos, end_pos: &Pos, map: &Map<Space>) -> Vec<V
                 }
             }
 
-            queue.push(Node { pos: new_pos, dir: d.clone(), cost: new_cost });
+            queue.push(Node {
+                pos: new_pos,
+                dir: d.clone(),
+                cost: new_cost,
+            });
         }
     }
 
@@ -245,7 +264,10 @@ fn find_optimal_paths(start_pos: &Pos, end_pos: &Pos, map: &Map<Space>) -> Vec<V
 
     for d in DIRECTIONS.iter() {
         if best_costs_found.contains_key(&(end_pos.clone(), d.clone())) {
-            stack.push_back((vec![(end_pos.clone(), d.clone())], (end_pos.clone(), d.clone())));
+            stack.push_back((
+                vec![(end_pos.clone(), d.clone())],
+                (end_pos.clone(), d.clone()),
+            ));
         }
     }
 

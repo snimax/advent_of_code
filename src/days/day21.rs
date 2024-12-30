@@ -147,14 +147,27 @@ fn get_generic_sequence_len(code_str: &str, num_robots: usize) -> usize {
     let code_str = format!("A{}", code_str); // Need to add that the numpad robot starts at A as well
 
     for (next, curr) in code_str.chars().skip(1).zip(code_str.chars()) {
-        result += get_sequence_len_rec(curr, next, num_robots + 1, &mut memoization, &numpad_path_possibilities, &dirpad_path_possibilities);
+        result += get_sequence_len_rec(
+            curr,
+            next,
+            num_robots + 1,
+            &mut memoization,
+            &numpad_path_possibilities,
+            &dirpad_path_possibilities,
+        );
     }
 
     result
 }
 
-fn get_sequence_len_rec(curr_button: char, target_button: char, depth: usize, memoization: &mut Memoization, paths_to_use: &PossiblePaths, dir_paths: &PossiblePaths) -> usize {
-
+fn get_sequence_len_rec(
+    curr_button: char,
+    target_button: char,
+    depth: usize,
+    memoization: &mut Memoization,
+    paths_to_use: &PossiblePaths,
+    dir_paths: &PossiblePaths,
+) -> usize {
     if curr_button == target_button || depth == 0 {
         return 1;
     }
@@ -164,15 +177,25 @@ fn get_sequence_len_rec(curr_button: char, target_button: char, depth: usize, me
     }
 
     if let Some(possibilities) = paths_to_use.get(&(curr_button, target_button)) {
-
-        let shortest_path = possibilities.iter().map(|possible_path| {
-            let path = format!("A{}A", possible_path); // Need to add that we start and end on A each time...
-            let mut res = 0;
-            for (next, curr) in path.chars().skip(1).zip(path.chars()) {
-                res += get_sequence_len_rec(curr, next, depth - 1,  memoization, dir_paths, dir_paths);
-            }
-            res
-        }).min().unwrap();
+        let shortest_path = possibilities
+            .iter()
+            .map(|possible_path| {
+                let path = format!("A{}A", possible_path); // Need to add that we start and end on A each time...
+                let mut res = 0;
+                for (next, curr) in path.chars().skip(1).zip(path.chars()) {
+                    res += get_sequence_len_rec(
+                        curr,
+                        next,
+                        depth - 1,
+                        memoization,
+                        dir_paths,
+                        dir_paths,
+                    );
+                }
+                res
+            })
+            .min()
+            .unwrap();
 
         memoization.insert((curr_button, target_button, depth), shortest_path);
         return shortest_path;
@@ -191,18 +214,18 @@ fn find_possible_paths(start: char, end: char) -> HashSet<String> {
     queue.push_back((start_coord, String::new()));
 
     let (x_move, x_char) = if diff.x < 0 {
-        (Pos {x: 1, y:0}, '<')
+        (Pos { x: 1, y: 0 }, '<')
     } else {
-        (Pos {x: -1, y:0}, '>')
+        (Pos { x: -1, y: 0 }, '>')
     };
 
     let (y_move, y_char) = if diff.y < 0 {
-        (Pos {x: 0, y: 1}, '^')
+        (Pos { x: 0, y: 1 }, '^')
     } else {
-        (Pos {x: 0, y: -1}, 'v')
+        (Pos { x: 0, y: -1 }, 'v')
     };
 
-    let forbidden_pos = Pos{ x:0, y:0 };
+    let forbidden_pos = Pos { x: 0, y: 0 };
 
     while let Some((curr, path)) = queue.pop_front() {
         if curr == end_coord {
@@ -211,13 +234,19 @@ fn find_possible_paths(start: char, end: char) -> HashSet<String> {
         }
 
         let horizontal_move_pos = curr.clone() - x_move.clone();
-        if horizontal_move_pos != forbidden_pos && horizontal_move_pos.x >= 0 && horizontal_move_pos.x <= 2 {
+        if horizontal_move_pos != forbidden_pos
+            && horizontal_move_pos.x >= 0
+            && horizontal_move_pos.x <= 2
+        {
             let mut new_path = path.clone();
             new_path.push(x_char);
             queue.push_back((horizontal_move_pos, new_path))
         }
         let vertical_move_pos = curr.clone() - y_move.clone();
-        if vertical_move_pos != forbidden_pos && vertical_move_pos.y >= 0 && vertical_move_pos.y <= 1 {
+        if vertical_move_pos != forbidden_pos
+            && vertical_move_pos.y >= 0
+            && vertical_move_pos.y <= 1
+        {
             let mut new_path = path.clone();
             new_path.push(y_char);
             queue.push_back((vertical_move_pos, new_path))
@@ -250,18 +279,18 @@ fn find_possible_paths_numpad(start: char, end: char) -> HashSet<String> {
     queue.push_back((start_coord, String::new()));
 
     let (x_move, x_char) = if diff.x < 0 {
-        (Pos {x: 1, y:0}, '<')
+        (Pos { x: 1, y: 0 }, '<')
     } else {
-        (Pos {x: -1, y:0}, '>')
+        (Pos { x: -1, y: 0 }, '>')
     };
 
     let (y_move, y_char) = if diff.y < 0 {
-        (Pos {x: 0, y: 1}, '^')
+        (Pos { x: 0, y: 1 }, '^')
     } else {
-        (Pos {x: 0, y: -1}, 'v')
+        (Pos { x: 0, y: -1 }, 'v')
     };
 
-    let forbidden_pos = Pos{ x:0, y:3 };
+    let forbidden_pos = Pos { x: 0, y: 3 };
 
     while let Some((curr, path)) = queue.pop_front() {
         if curr == end_coord {
@@ -270,13 +299,19 @@ fn find_possible_paths_numpad(start: char, end: char) -> HashSet<String> {
         }
 
         let horizontal_move_pos = curr.clone() - x_move.clone();
-        if horizontal_move_pos != forbidden_pos && horizontal_move_pos.x >= 0 && horizontal_move_pos.x <= 2 {
+        if horizontal_move_pos != forbidden_pos
+            && horizontal_move_pos.x >= 0
+            && horizontal_move_pos.x <= 2
+        {
             let mut new_path = path.clone();
             new_path.push(x_char);
             queue.push_back((horizontal_move_pos, new_path))
         }
         let vertical_move_pos = curr.clone() - y_move.clone();
-        if vertical_move_pos != forbidden_pos && vertical_move_pos.y >= 0 && vertical_move_pos.y <= 3 {
+        if vertical_move_pos != forbidden_pos
+            && vertical_move_pos.y >= 0
+            && vertical_move_pos.y <= 3
+        {
             let mut new_path = path.clone();
             new_path.push(y_char);
             queue.push_back((vertical_move_pos, new_path))
@@ -286,7 +321,7 @@ fn find_possible_paths_numpad(start: char, end: char) -> HashSet<String> {
 }
 
 fn build_all_paths_numpad() -> PossiblePaths {
-    const DIR_BUTTONS: [char; 11] = ['1','2','3','4','5','6','7','8','9','0','A'];
+    const DIR_BUTTONS: [char; 11] = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', 'A'];
 
     let mut possible_paths = PossiblePaths::new();
     for curr_button in DIR_BUTTONS {
@@ -301,9 +336,8 @@ fn build_all_paths_numpad() -> PossiblePaths {
 
 fn part2(input: &[String]) -> usize {
     input.iter().fold(0, |acc, line| {
-        acc + get_generic_sequence_len(line,25) * get_code_val(line)
+        acc + get_generic_sequence_len(line, 25) * get_code_val(line)
     })
-
 }
 
 #[cfg(test)]
