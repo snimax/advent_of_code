@@ -1,13 +1,11 @@
 use advent_of_code_2024::{parse_file, parse_lines, Pos};
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet, VecDeque};
 
 pub fn solve() {
     if let Ok(line_string) = parse_file("Inputs/day21.txt") {
         let lines = parse_lines(&line_string);
         println!("Part1 solution: {}", part1(&lines));
-        println!("Part2 solution: {}", part2(&lines)); // 248737376587816 is too high
-                                                       // 173199917469996 is too low
-                                                       // 224189887188196 is too high
+        println!("Part2 solution: {}", part2(&lines));
     } else {
         println!("Could not parse file");
     }
@@ -136,103 +134,175 @@ fn part1(input: &[String]) -> usize {
     })
 }
 
+type PossiblePaths = HashMap<(char, char), HashSet<String>>;
+type Memoization = HashMap<(char, char, usize), usize>;
+
 fn get_generic_sequence_len(code_str: &str, num_robots: usize) -> usize {
-    let mut curr_sequence = get_numpad_sequence(code_str);
-    // let mut memoization = HashMap::new();
+    let dirpad_path_possibilities = build_all_paths();
+    let numpad_path_possibilities = build_all_paths_numpad();
 
-    let mut result: usize = 0;
-    if num_robots <= 4 {
-        for _ in 0..num_robots {
-            curr_sequence = get_dirpad_sequence(&curr_sequence);//, &mut memoization);
-        }
-        return curr_sequence.chars().count();
-    } else {
+    let mut memoization = Memoization::new();
+    let mut result = 0;
 
-        const INITIAL_ROBOT_LAYERS: usize = 3;
-        for _ in 0..INITIAL_ROBOT_LAYERS {
-            curr_sequence = get_dirpad_sequence(&curr_sequence);//, &mut memoization);
-        }
+    let code_str = format!("A{}", code_str); // Need to add that the numpad robot starts at A as well
 
-        curr_sequence.insert(0, 'A');
-
-        let mut memoization = HashMap::new();
-        for (next, curr) in curr_sequence.chars().skip(1).zip(curr_sequence.chars()) {
-            result += get_sequence_len_rec(curr, next, num_robots - INITIAL_ROBOT_LAYERS, &mut memoization)
-        }
+    for (next, curr) in code_str.chars().skip(1).zip(code_str.chars()) {
+        result += get_sequence_len_rec(curr, next, num_robots + 1, &mut memoization, &numpad_path_possibilities, &dirpad_path_possibilities);
     }
 
     result
 }
 
-fn get_sequence_len_rec(curr_button: char, target_button: char, depth: usize, memoization: &mut HashMap<(char, char, usize), usize>) -> usize {
-    // if its the last keypad, we can press each button immediately
-    if depth == 0 {
+fn get_sequence_len_rec(curr_button: char, target_button: char, depth: usize, memoization: &mut Memoization, paths_to_use: &PossiblePaths, dir_paths: &PossiblePaths) -> usize {
+
+    if curr_button == target_button || depth == 0 {
         return 1;
     }
 
-    if let Some(val) = memoization.get(&(curr_button, target_button, depth)) {
-        return *val;
+    if let Some(path_len) = memoization.get(&(curr_button, target_button, depth)) {
+        return *path_len;
     }
 
-    let curr_button_pos = get_dir_button_coord(curr_button);
-    let target_button_pos = get_dir_button_coord(target_button);
-    let diff = target_button_pos.clone() - curr_button_pos.clone();
+    if let Some(possibilities) = paths_to_use.get(&(curr_button, target_button)) {
 
-    let horizontal_moves = match diff.x.cmp(&0) {
-        std::cmp::Ordering::Less => "<",
-        std::cmp::Ordering::Equal => "",
-        std::cmp::Ordering::Greater => ">",
+        let shortest_path = possibilities.iter().map(|possible_path| {
+            let path = format!("A{}A", possible_path); // Need to add that we start and end on A each time...
+            let mut res = 0;
+            for (next, curr) in path.chars().skip(1).zip(path.chars()) {
+                res += get_sequence_len_rec(curr, next, depth - 1,  memoization, dir_paths, dir_paths);
+            }
+            res
+        }).min().unwrap();
+
+        memoization.insert((curr_button, target_button, depth), shortest_path);
+        return shortest_path;
     }
-    .repeat(diff.x.unsigned_abs() as usize);
 
-    let vertical_moves = match diff.y.cmp(&0) {
-        std::cmp::Ordering::Less => "^",
-        std::cmp::Ordering::Equal => "",
-        std::cmp::Ordering::Greater => "v",
-    }
-    .repeat(diff.y.unsigned_abs() as usize);
+    usize::MAX
+}
 
-    // From what I could tell, the longest sequence is 6 chars since I include the initial from A to < => Av<<<A
-    let mut curr_sequence_of_moves = String::with_capacity(6);
-    curr_sequence_of_moves.push('A'); // We will allways start from A
+fn find_possible_paths(start: char, end: char) -> HashSet<String> {
+    let mut paths = HashSet::new();
 
-    if curr_button == '<' {
-        curr_sequence_of_moves.push_str(&horizontal_moves);
-        curr_sequence_of_moves.push_str(&vertical_moves);
-    } else if target_button == '<' {
-        curr_sequence_of_moves.push_str(&vertical_moves);
-        curr_sequence_of_moves.push_str(&horizontal_moves);
-    } else if diff.x <= 0 && diff.y <= 0 { // Up-Left
-        curr_sequence_of_moves.push_str(&horizontal_moves);
-        curr_sequence_of_moves.push_str(&vertical_moves);
-    } else if diff.x <= 0 && diff.y > 0 { // Down-Left
-        curr_sequence_of_moves.push_str(&horizontal_moves);
-        curr_sequence_of_moves.push_str(&vertical_moves);
-    } else if diff.x > 0 && diff.y <= 0 { // Down-right
-        curr_sequence_of_moves.push_str(&vertical_moves);
-        curr_sequence_of_moves.push_str(&horizontal_moves);
+    let mut queue = VecDeque::new();
+    let start_coord = get_dir_button_coord(start);
+    let end_coord = get_dir_button_coord(end);
+    let diff = end_coord.clone() - start_coord.clone();
+    queue.push_back((start_coord, String::new()));
+
+    let (x_move, x_char) = if diff.x < 0 {
+        (Pos {x: 1, y:0}, '<')
     } else {
-        curr_sequence_of_moves.push_str(&vertical_moves);
-        curr_sequence_of_moves.push_str(&horizontal_moves);
+        (Pos {x: -1, y:0}, '>')
+    };
+
+    let (y_move, y_char) = if diff.y < 0 {
+        (Pos {x: 0, y: 1}, '^')
+    } else {
+        (Pos {x: 0, y: -1}, 'v')
+    };
+
+    let forbidden_pos = Pos{ x:0, y:0 };
+
+    while let Some((curr, path)) = queue.pop_front() {
+        if curr == end_coord {
+            paths.insert(path.clone());
+            continue;
+        }
+
+        let horizontal_move_pos = curr.clone() - x_move.clone();
+        if horizontal_move_pos != forbidden_pos && horizontal_move_pos.x >= 0 && horizontal_move_pos.x <= 2 {
+            let mut new_path = path.clone();
+            new_path.push(x_char);
+            queue.push_back((horizontal_move_pos, new_path))
+        }
+        let vertical_move_pos = curr.clone() - y_move.clone();
+        if vertical_move_pos != forbidden_pos && vertical_move_pos.y >= 0 && vertical_move_pos.y <= 1 {
+            let mut new_path = path.clone();
+            new_path.push(y_char);
+            queue.push_back((vertical_move_pos, new_path))
+        }
+    }
+    paths
+}
+
+fn build_all_paths() -> PossiblePaths {
+    const DIR_BUTTONS: [char; 5] = ['^', 'v', '<', '>', 'A'];
+
+    let mut possible_paths = PossiblePaths::new();
+    for curr_button in DIR_BUTTONS {
+        for target_button in DIR_BUTTONS {
+            let paths = find_possible_paths(curr_button, target_button);
+            possible_paths.insert((curr_button, target_button), paths);
+        }
     }
 
-    curr_sequence_of_moves.push('A');
+    possible_paths
+}
 
-    let mut required_moves = 0;
-    for (next, curr) in curr_sequence_of_moves.chars().skip(1).zip(curr_sequence_of_moves.chars()) {
-        required_moves += get_sequence_len_rec(curr, next, depth - 1, memoization);
+fn find_possible_paths_numpad(start: char, end: char) -> HashSet<String> {
+    let mut paths = HashSet::new();
+
+    let mut queue = VecDeque::new();
+    let start_coord = get_numeric_button_coord(start);
+    let end_coord = get_numeric_button_coord(end);
+    let diff = end_coord.clone() - start_coord.clone();
+    queue.push_back((start_coord, String::new()));
+
+    let (x_move, x_char) = if diff.x < 0 {
+        (Pos {x: 1, y:0}, '<')
+    } else {
+        (Pos {x: -1, y:0}, '>')
+    };
+
+    let (y_move, y_char) = if diff.y < 0 {
+        (Pos {x: 0, y: 1}, '^')
+    } else {
+        (Pos {x: 0, y: -1}, 'v')
+    };
+
+    let forbidden_pos = Pos{ x:0, y:3 };
+
+    while let Some((curr, path)) = queue.pop_front() {
+        if curr == end_coord {
+            paths.insert(path.clone());
+            continue;
+        }
+
+        let horizontal_move_pos = curr.clone() - x_move.clone();
+        if horizontal_move_pos != forbidden_pos && horizontal_move_pos.x >= 0 && horizontal_move_pos.x <= 2 {
+            let mut new_path = path.clone();
+            new_path.push(x_char);
+            queue.push_back((horizontal_move_pos, new_path))
+        }
+        let vertical_move_pos = curr.clone() - y_move.clone();
+        if vertical_move_pos != forbidden_pos && vertical_move_pos.y >= 0 && vertical_move_pos.y <= 3 {
+            let mut new_path = path.clone();
+            new_path.push(y_char);
+            queue.push_back((vertical_move_pos, new_path))
+        }
+    }
+    paths
+}
+
+fn build_all_paths_numpad() -> PossiblePaths {
+    const DIR_BUTTONS: [char; 11] = ['1','2','3','4','5','6','7','8','9','0','A'];
+
+    let mut possible_paths = PossiblePaths::new();
+    for curr_button in DIR_BUTTONS {
+        for target_button in DIR_BUTTONS {
+            let paths = find_possible_paths_numpad(curr_button, target_button);
+            possible_paths.insert((curr_button, target_button), paths);
+        }
     }
 
-    memoization.insert((curr_button, target_button, depth), required_moves);
-
-    required_moves
+    possible_paths
 }
 
 fn part2(input: &[String]) -> usize {
     input.iter().fold(0, |acc, line| {
         acc + get_generic_sequence_len(line,25) * get_code_val(line)
     })
-
 
 }
 
@@ -246,16 +316,6 @@ mod tests {
 179A
 456A
 379A"#;
-
-        parse_lines(&input)
-    }
-
-    fn get_first_real_input() -> Vec<String> {
-        let input = r#"480A
-682A
-140A
-246A
-938A"#;
 
         parse_lines(&input)
     }
@@ -306,7 +366,7 @@ mod tests {
     #[test]
     fn test_part2() -> Result<(), String> {
         let input = get_input();
-        assert_eq!(part2(&input), 126384);
+        assert_eq!(part2(&input), 154115708116294);
 
         Ok(())
     }
