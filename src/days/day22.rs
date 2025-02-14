@@ -18,14 +18,14 @@ fn parse_initial_numbers(lines: &[String]) -> Vec<usize> {
     lines.iter().map(|s| s.parse().unwrap()).collect()
 }
 
-fn mix_and_prine(current_number: usize, secret_number: usize) -> usize {
+fn mix_and_prune(current_number: usize, secret_number: usize) -> usize {
     (current_number ^ secret_number) % 16777216
 }
 
 fn calculate_next_secret_number(secret_number: usize) -> usize {
-    let mul = mix_and_prine(secret_number * 64, secret_number);
-    let div = mix_and_prine(mul / 32, mul);
-    mix_and_prine(div * 2048, div)
+    let mul = mix_and_prune(secret_number * 64, secret_number);
+    let div = mix_and_prune(mul / 32, mul);
+    mix_and_prune(div * 2048, div)
 }
 
 fn part1(input: &[usize]) -> usize {
