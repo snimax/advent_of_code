@@ -22,41 +22,22 @@ enum Space {
 }
 
 fn parse_map(lines: &[String]) -> (Pos, Pos, Map<Space>) {
-    let size_y = lines.len();
-    let size_x = lines[0].len();
-    let mut map = vec![vec![Space::Empty; size_x]; size_y];
     let mut start_pos = Pos { x: 0, y: 0 };
     let mut end_pos = Pos { x: 0, y: 0 };
-    for (row, line) in lines.iter().enumerate() {
-        for (col, char) in line.chars().enumerate() {
-            match char {
-                '#' => map[row][col] = Space::Wall,
-                'S' => {
-                    start_pos = Pos {
-                        x: col as i32,
-                        y: row as i32,
-                    }
-                }
-                'E' => {
-                    end_pos = Pos {
-                        x: col as i32,
-                        y: row as i32,
-                    }
-                }
-                _ => {}
-            }
+    let map = Map::new(lines, |char, pos| match char {
+        '#' => Space::Wall,
+        'S' => {
+            start_pos = pos.clone();
+            Space::Empty
         }
-    }
+        'E' => {
+            end_pos = pos.clone();
+            Space::Empty
+        }
+        _ => Space::Empty,
+    });
 
-    (
-        start_pos,
-        end_pos,
-        Map {
-            map,
-            size_x,
-            size_y,
-        },
-    )
+    (start_pos, end_pos, map)
 }
 
 fn rotate(dir: &Dir) -> (&Dir, &Dir) {

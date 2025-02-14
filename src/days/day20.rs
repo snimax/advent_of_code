@@ -22,43 +22,21 @@ fn parse_map(lines: &[String]) -> (Pos, Pos, Map<Space>) {
     let mut start_pos = Pos { x: 0, y: 0 };
     let mut end_pos = Pos { x: 0, y: 0 };
 
-    let size_y = lines.len();
-    let size_x = lines[0].len();
-    let mut map = vec![vec![Space::Empty; size_x]; size_y];
-
-    lines.iter().enumerate().for_each(|(row, line)| {
-        line.chars().enumerate().for_each(|(col, c)| {
-            map[row][col] = match c {
-                '.' => Space::Empty,
-                '#' => Space::Wall,
-                'S' => {
-                    start_pos = Pos {
-                        x: col as i32,
-                        y: row as i32,
-                    };
-                    Space::Empty
-                }
-                'E' => {
-                    end_pos = Pos {
-                        x: col as i32,
-                        y: row as i32,
-                    };
-                    Space::Empty
-                }
-                c => panic!("Got unexpected char '{c}' when parsing map"),
-            }
-        });
+    let map = Map::new(lines, |c, pos| match c {
+        '.' => Space::Empty,
+        '#' => Space::Wall,
+        'S' => {
+            start_pos = pos.clone();
+            Space::Empty
+        }
+        'E' => {
+            end_pos = pos.clone();
+            Space::Empty
+        }
+        c => panic!("Got unexpected char '{c}' when parsing map"),
     });
 
-    (
-        start_pos,
-        end_pos,
-        Map {
-            map,
-            size_x,
-            size_y,
-        },
-    )
+    (start_pos, end_pos, map)
 }
 
 fn find_path_length(start_pos: &Pos, end_pos: &Pos, map: &Map<Space>) -> Vec<(Pos, usize)> {

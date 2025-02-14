@@ -9,6 +9,35 @@ pub struct Map<T: Copy> {
 }
 
 impl<T: Copy> Map<T> {
+    pub fn new<F>(lines: &[String], mut func: F) -> Map<T>
+    where
+        F: FnMut(char, &Pos) -> T,
+    {
+        let size_y = lines.len();
+        let size_x = lines[0].len();
+        let mut map = Vec::with_capacity(size_y);
+
+        for (row, line) in lines.iter().enumerate() {
+            let mut map_row = Vec::with_capacity(size_x);
+            for (col, char) in line.chars().enumerate() {
+                map_row.push(func(
+                    char,
+                    &Pos {
+                        x: col as i32,
+                        y: row as i32,
+                    },
+                ));
+            }
+            map.push(map_row);
+        }
+
+        Map {
+            map,
+            size_x,
+            size_y,
+        }
+    }
+
     pub fn next(&self, curr_pos: &Pos, dir: &Dir) -> Option<T> {
         let new_pos = Pos {
             x: curr_pos.x + dir.x,

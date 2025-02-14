@@ -13,20 +13,7 @@ pub fn solve() {
 }
 
 fn parse_map(lines: &[String]) -> Map<u8> {
-    let size_y = lines.len();
-    let size_x = lines[0].len();
-
-    let mut map = vec![vec![]; size_y];
-
-    map.iter_mut().zip(lines).for_each(|(map_row, line)| {
-        *map_row = line.as_bytes().to_vec();
-    });
-
-    Map {
-        map,
-        size_x,
-        size_y,
-    }
+    Map::new(lines, |char, _pos| char as u8)
 }
 
 fn map_region(map: &Map<u8>, start_pos: &Pos) -> (u8, HashSet<Pos>) {

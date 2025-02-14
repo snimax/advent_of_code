@@ -13,44 +13,19 @@ pub fn solve() {
 }
 
 fn parse_map(lines: &[String]) -> (Map<i32>, Vec<Pos>) {
-    let size_y = lines.len();
-    let size_x = lines[0].len();
-
-    let mut map = vec![vec![]; size_y];
     let mut starting_positions = Vec::new();
-
-    map.iter_mut().zip(lines).for_each(|(map_row, line)| {
-        *map_row = line
-            .chars()
-            .map(|val| {
-                if val.is_ascii_digit() {
-                    val.to_string().parse::<i32>().unwrap()
-                } else {
-                    0
-                }
-            })
-            .collect()
-    });
-
-    lines.iter().enumerate().for_each(|(row, line)| {
-        line.as_bytes().iter().enumerate().for_each(|(col, val)| {
-            if *val == b'0' {
-                starting_positions.push(Pos {
-                    x: col as i32,
-                    y: row as i32,
-                });
+    let map = Map::new(lines, |val, pos| {
+        if val.is_ascii_digit() {
+            if val == '0' {
+                starting_positions.push(pos.clone());
             }
-        })
+            val.to_string().parse::<i32>().unwrap()
+        } else {
+            0
+        }
     });
 
-    (
-        Map {
-            map,
-            size_x,
-            size_y,
-        },
-        starting_positions,
-    )
+    (map, starting_positions)
 }
 
 fn part1(map: &Map<i32>, starting_positions: &[Pos]) -> usize {
