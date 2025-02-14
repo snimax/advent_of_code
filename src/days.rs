@@ -1,4 +1,4 @@
-use super::{pos::*, dir::*, library::*};
+use super::{dir::*, library::*, map::*, pos::*};
 
 pub mod day1;
 pub mod day10;

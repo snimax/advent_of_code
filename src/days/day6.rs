@@ -1,4 +1,4 @@
-use super::{parse_file, parse_lines, Dir, Pos, DOWN, LEFT, RIGHT, UP, Map};
+use super::{parse_file, parse_lines, Dir, Map, Pos, DOWN, LEFT, RIGHT, UP};
 use std::collections::HashSet;
 
 pub fn solve() {
@@ -73,7 +73,7 @@ fn find_visited_positions(map: &Map<u8>, start_pos: &Pos, dir: &Dir) -> Option<H
     while let Some(val) = map.next(&curr_pos, dir) {
         match val {
             b'.' => {
-                curr_pos = &curr_pos + dir;
+                curr_pos += dir;
                 visited_positions.insert(curr_pos.clone());
                 if path.contains(&(curr_pos.clone(), dir.clone())) {
                     return None;

@@ -92,7 +92,7 @@ fn find_next_free_spot(start_pos: &Pos, boxes: &Boxes, walls: &Walls, dir: &Dir)
     let mut curr_pos = start_pos + dir;
 
     while boxes.iter().any(|(_, pos)| *pos == curr_pos) {
-        curr_pos = &curr_pos + dir;
+        curr_pos += dir;
     }
 
     if walls.contains(&curr_pos) {

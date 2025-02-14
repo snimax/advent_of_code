@@ -1,12 +1,12 @@
 use super::pos::Pos;
-use std::ops::{Add, Mul, Sub, Deref, DerefMut};
+use std::ops::{Add, AddAssign, Deref, DerefMut, Mul, Sub, SubAssign};
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub struct Dir(pub Pos);
 
 impl Dir {
     pub const fn new(x: i32, y: i32) -> Self {
-        Dir(Pos {x, y})
+        Dir(Pos { x, y })
     }
 }
 
@@ -35,6 +35,15 @@ impl<'a> Add<&'a Dir> for &Pos {
     }
 }
 
+impl AddAssign<&Dir> for Pos {
+    fn add_assign(&mut self, other: &Dir) {
+        *self = Self {
+            x: self.x + other.x,
+            y: self.y + other.y,
+        };
+    }
+}
+
 impl<'a> Sub<&'a Dir> for &Pos {
     type Output = Pos;
 
@@ -43,6 +52,15 @@ impl<'a> Sub<&'a Dir> for &Pos {
             x: self.x - other.x,
             y: self.y - other.y,
         }
+    }
+}
+
+impl SubAssign<&Dir> for Pos {
+    fn sub_assign(&mut self, other: &Dir) {
+        *self = Self {
+            x: self.x - other.x,
+            y: self.y - other.y,
+        };
     }
 }
 

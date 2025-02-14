@@ -1,5 +1,5 @@
-use super::pos::Pos;
 use super::dir::Dir;
+use super::pos::Pos;
 
 #[derive(Clone)]
 pub struct Map<T: Copy> {

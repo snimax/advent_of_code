@@ -1,4 +1,4 @@
-use std::ops::{Add, Mul, Sub};
+use std::ops::{Add, AddAssign, Mul, MulAssign, Sub, SubAssign};
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub struct Pos {
@@ -17,6 +17,15 @@ impl<'a> Add<&'a Pos> for &Pos {
     }
 }
 
+impl AddAssign<&Pos> for Pos {
+    fn add_assign(&mut self, other: &Self) {
+        *self = Self {
+            x: self.x + other.x,
+            y: self.y + other.y,
+        };
+    }
+}
+
 impl<'a> Sub<&'a Pos> for &Pos {
     type Output = Pos;
 
@@ -28,6 +37,15 @@ impl<'a> Sub<&'a Pos> for &Pos {
     }
 }
 
+impl SubAssign<&Pos> for Pos {
+    fn sub_assign(&mut self, other: &Self) {
+        *self = Self {
+            x: self.x - other.x,
+            y: self.y - other.y,
+        };
+    }
+}
+
 impl Mul<i32> for &Pos {
     type Output = Pos;
 
@@ -36,5 +54,14 @@ impl Mul<i32> for &Pos {
             x: self.x * other,
             y: self.y * other,
         }
+    }
+}
+
+impl MulAssign<i32> for Pos {
+    fn mul_assign(&mut self, other: i32) {
+        *self = Self {
+            x: self.x * other,
+            y: self.y * other,
+        };
     }
 }

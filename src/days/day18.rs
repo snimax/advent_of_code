@@ -1,4 +1,4 @@
-use super::{ parse_file, parse_lines, pos::Pos, dir::DIRECTIONS};
+use super::{dir::DIRECTIONS, parse_file, parse_lines, pos::Pos};
 use std::collections::{HashMap, VecDeque};
 
 pub fn solve() {

@@ -1,10 +1,10 @@
-pub mod pos;
 pub mod dir;
 pub mod map;
+pub mod pos;
 
-pub use pos::Pos;
 pub use dir::Dir;
 pub use map::Map;
+pub use pos::Pos;
 
 use std::fs;
 use std::io::Error;
