@@ -5,7 +5,6 @@ pub fn solve() {
         let lines = parse_lines(&line_string);
         let (keys, locks) = parse_keys_and_locks(&lines);
         println!("Part1 solution: {}", part1(&keys, &locks));
-        println!("Part2 solution: {}", part2(&keys, &locks));
     } else {
         println!("Could not parse file");
     }
@@ -77,10 +76,6 @@ fn part1(keys: &[Key], locks: &[Lock]) -> usize {
     keys_that_fit
 }
 
-fn part2(_keys: &[Key], _locks: &[Lock]) -> String {
-    "".to_string()
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -134,14 +129,6 @@ mod tests {
     fn test_part1() -> Result<(), String> {
         let (keys, locks) = get_input();
         assert_eq!(part1(&keys, &locks), 3);
-
-        Ok(())
-    }
-
-    #[test]
-    fn test_part2() -> Result<(), String> {
-        let (keys, locks) = get_input();
-        assert_eq!(part2(&keys, &locks), "z00,z01,z02,z05");
 
         Ok(())
     }

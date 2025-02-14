@@ -89,10 +89,10 @@ fn part1(start_robot_pos: &Pos, walls: &Walls, boxes: &Boxes, instructions: &[Di
 }
 
 fn find_next_free_spot(start_pos: &Pos, boxes: &Boxes, walls: &Walls, dir: &Dir) -> Option<Pos> {
-    let mut curr_pos = start_pos.clone() + dir.clone();
+    let mut curr_pos = start_pos + dir;
 
     while boxes.iter().any(|(_, pos)| *pos == curr_pos) {
-        curr_pos = curr_pos + dir.clone();
+        curr_pos = &curr_pos + dir;
     }
 
     if walls.contains(&curr_pos) {
@@ -112,12 +112,12 @@ fn move_affected_object(
 ) {
     let (_, ref mut pos) = object;
     if pos.x >= min_x && pos.x <= max_x && pos.y >= min_y && pos.y <= max_y {
-        *pos = pos.clone() + dir.clone();
+        *pos = &*pos + dir;
     }
 }
 
 fn try_move_in_dir(robot_pos: &mut Pos, boxes: &mut Boxes, walls: &Walls, dir: &Dir) {
-    let new_robot_pos = robot_pos.clone() + dir.clone();
+    let new_robot_pos = &*robot_pos + dir;
 
     if let Some(pos) = find_next_free_spot(robot_pos, boxes, walls, dir) {
         let min_x = i32::min(pos.x, robot_pos.x);
@@ -220,7 +220,7 @@ enum Collision<'a> {
 
 fn find_overlapping_objects<'a>(robot_pos: &Pos, boxes: &'a Boxes, walls: &Walls) -> Collision<'a> {
     for b in boxes.iter() {
-        if b.1 == *robot_pos || b.1.clone() + RIGHT == *robot_pos {
+        if b.1 == *robot_pos || &b.1 + &RIGHT == *robot_pos {
             return Collision::Box(b);
         }
     }
@@ -231,8 +231,8 @@ fn find_overlapping_objects<'a>(robot_pos: &Pos, boxes: &'a Boxes, walls: &Walls
 }
 
 fn items_overlapping(box1: &Box, box2: &Box) -> bool {
-    let pos1_end = box1.1.clone() + RIGHT;
-    let pos2_end = box2.1.clone() + RIGHT;
+    let pos1_end = &box1.1 + &RIGHT;
+    let pos2_end = &box2.1 + &RIGHT;
 
     pos1_end == box2.1 || pos2_end == box1.1 || box1.1 == box2.1
 }
@@ -260,8 +260,8 @@ fn move_boxes(dir: &Dir, walls: &Walls, moved_boxes: &[usize], boxes: &Boxes) ->
         if !box1_moved_already {
             let mut new_moved_boxes = moved_boxes.to_owned();
             new_moved_boxes.push(box1.0);
-            let new_pos = box1.1.clone() + dir.clone();
-            let new_pos2 = new_pos.clone() + RIGHT;
+            let new_pos = &box1.1 + dir;
+            let new_pos2 = &new_pos + &RIGHT;
             if walls.contains(&new_pos) || walls.contains(&new_pos2) {
                 return None;
             }
@@ -273,8 +273,8 @@ fn move_boxes(dir: &Dir, walls: &Walls, moved_boxes: &[usize], boxes: &Boxes) ->
             }
         }
         if !box2_moved_already {
-            let new_pos = box2.1.clone() + dir.clone();
-            let new_pos2 = new_pos.clone() + RIGHT;
+            let new_pos = &box2.1 + dir;
+            let new_pos2 = &new_pos + &RIGHT;
             let mut new_moved_boxes = moved_boxes.to_owned();
             new_moved_boxes.push(box2.0);
             if walls.contains(&new_pos) || walls.contains(&new_pos2) {
@@ -294,15 +294,15 @@ fn move_boxes(dir: &Dir, walls: &Walls, moved_boxes: &[usize], boxes: &Boxes) ->
 }
 
 fn try_recursive_move_in_dir(robot_pos: &mut Pos, boxes: &mut Boxes, walls: &Walls, dir: &Dir) {
-    let new_robot_pos = robot_pos.clone() + dir.clone();
+    let new_robot_pos = &*robot_pos + dir;
     let overlapping_object = find_overlapping_objects(&new_robot_pos, boxes, walls);
     match overlapping_object {
         Collision::None => *robot_pos = new_robot_pos,
         Collision::Wall => {}
         Collision::Box(b) => {
             let mut new_boxes = boxes.clone();
-            let new_obj_pos = b.1.clone() + dir.clone();
-            let new_obj_pos2 = new_obj_pos.clone() + RIGHT;
+            let new_obj_pos = &b.1 + dir;
+            let new_obj_pos2 = &new_obj_pos + &RIGHT;
             if walls.contains(&new_obj_pos) || walls.contains(&new_obj_pos2) {
                 return;
             }

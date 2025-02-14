@@ -32,22 +32,22 @@ fn parse_map(lines: &[String]) -> Map<u8> {
 fn get_neighbors(pos: &Pos, plant_type: &u8, map: &Map<u8>) -> Vec<Pos> {
     let mut valid_neighbors = Vec::new();
 
-    let mut next_pos = pos.clone() + UP;
+    let mut next_pos = pos + &UP;
     if map.valid_pos(&next_pos) && map.get(&next_pos) == *plant_type {
         valid_neighbors.push(next_pos);
     }
 
-    next_pos = pos.clone() + DOWN;
+    next_pos = pos + &DOWN;
     if map.valid_pos(&next_pos) && map.get(&next_pos) == *plant_type {
         valid_neighbors.push(next_pos);
     }
 
-    next_pos = pos.clone() + LEFT;
+    next_pos = pos + &LEFT;
     if map.valid_pos(&next_pos) && map.get(&next_pos) == *plant_type {
         valid_neighbors.push(next_pos);
     }
 
-    next_pos = pos.clone() + RIGHT;
+    next_pos = pos + &RIGHT;
     if map.valid_pos(&next_pos) && map.get(&next_pos) == *plant_type {
         valid_neighbors.push(next_pos);
     }
@@ -127,7 +127,7 @@ fn find_sides(region: &(u8, HashSet<Pos>), map: &Map<u8>) -> usize {
         let neighbors: Vec<bool> = directions
             .iter()
             .map(|p| {
-                let pos = p.clone() + position.clone();
+                let pos = p + position;
                 map.valid_pos(&pos) && map.get(&pos) == *plant_type
             })
             .collect();
@@ -137,7 +137,7 @@ fn find_sides(region: &(u8, HashSet<Pos>), map: &Map<u8>) -> usize {
         let diagonal_neighbors: Vec<bool> = diagonals
             .iter()
             .map(|p| {
-                let pos = p.clone() + position.clone();
+                let pos = p + position;
                 map.valid_pos(&pos) && map.get(&pos) == *plant_type
             })
             .collect();

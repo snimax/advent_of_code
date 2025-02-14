@@ -85,22 +85,22 @@ fn get_neighbors(pos: &Pos, map: &Map<i32>) -> Vec<Pos> {
     let mut valid_neighbors = Vec::new();
     let next_height = map.get(pos) + 1;
 
-    let mut next_pos = pos.clone() + UP;
+    let mut next_pos = pos + &UP;
     if map.valid_pos(&next_pos) && map.get(&next_pos) == next_height {
         valid_neighbors.push(next_pos);
     }
 
-    next_pos = pos.clone() + DOWN;
+    next_pos = pos + &DOWN;
     if map.valid_pos(&next_pos) && map.get(&next_pos) == next_height {
         valid_neighbors.push(next_pos);
     }
 
-    next_pos = pos.clone() + LEFT;
+    next_pos = pos + &LEFT;
     if map.valid_pos(&next_pos) && map.get(&next_pos) == next_height {
         valid_neighbors.push(next_pos);
     }
 
-    next_pos = pos.clone() + RIGHT;
+    next_pos = pos + &RIGHT;
     if map.valid_pos(&next_pos) && map.get(&next_pos) == next_height {
         valid_neighbors.push(next_pos);
     }

@@ -93,9 +93,9 @@ fn find_straighetest_path(
         }
 
         let (cw, ccw) = rotate(&curr_dir);
-        let neighbor_cw = curr_pos.clone() + cw.clone();
-        let neighbor_ccw = curr_pos.clone() + ccw.clone();
-        let next_pos = curr_pos.clone() + curr_dir.clone();
+        let neighbor_cw = &curr_pos + &cw;
+        let neighbor_ccw = &curr_pos + &ccw;
+        let next_pos = &curr_pos + &curr_dir;
 
         if map.get(&next_pos) != Space::Wall {
             queue.push_back((next_pos, curr_dir.clone(), steps + 1));
@@ -178,7 +178,7 @@ fn find_optimal_paths(start_pos: &Pos, end_pos: &Pos, map: &Map<Space>) -> Vec<V
         }
 
         for d in DIRECTIONS.iter() {
-            let new_pos = curr_pos.clone() + d.clone();
+            let new_pos = &curr_pos + d;
             if map.get(&new_pos) == Space::Wall {
                 continue;
             }

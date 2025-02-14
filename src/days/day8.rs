@@ -61,9 +61,9 @@ fn calculate_antinode_positions(
                     antinode_positions.insert(a.clone());
                     antinode_positions.insert(b.clone());
                 }
-                let diff = b.clone() - a.clone();
+                let diff = b - a;
 
-                let mut antinode_pos = a.clone() - diff.clone();
+                let mut antinode_pos = a - &diff;
                 loop {
                     if valid_pos(&antinode_pos, map_size) {
                         antinode_positions.insert(antinode_pos.clone());
@@ -71,13 +71,13 @@ fn calculate_antinode_positions(
                         break;
                     }
                     if part_two {
-                        antinode_pos = antinode_pos.clone() - diff.clone();
+                        antinode_pos = &antinode_pos - &diff;
                     } else {
                         break;
                     }
                 }
 
-                antinode_pos = b.clone() + diff.clone();
+                antinode_pos = b + &diff;
                 loop {
                     if valid_pos(&antinode_pos, map_size) {
                         antinode_positions.insert(antinode_pos.clone());
@@ -85,7 +85,7 @@ fn calculate_antinode_positions(
                         break;
                     }
                     if part_two {
-                        antinode_pos = antinode_pos.clone() + diff.clone();
+                        antinode_pos = &antinode_pos + &diff;
                     } else {
                         break;
                     }

@@ -45,7 +45,7 @@ fn get_numpad_sequence(code_str: &str) -> String {
 
     for c in code_str.chars() {
         let target_button_pos = get_numeric_button_coord(c);
-        let diff = target_button_pos.clone() - curr_button_pos.clone();
+        let diff = &target_button_pos - &curr_button_pos;
 
         let horizontal_moves = match diff.x.cmp(&0) {
             std::cmp::Ordering::Less => "<",
@@ -86,7 +86,7 @@ fn get_dirpad_sequence(sequence_str: &str) -> String {
 
     for c in sequence_str.chars() {
         let target_button_pos = get_dir_button_coord(c);
-        let diff = target_button_pos.clone() - curr_button_pos.clone();
+        let diff = &target_button_pos - &curr_button_pos;
 
         let horizontal_moves = match diff.x.cmp(&0) {
             std::cmp::Ordering::Less => "<",
@@ -210,7 +210,7 @@ fn find_possible_paths(start: char, end: char) -> HashSet<String> {
     let mut queue = VecDeque::new();
     let start_coord = get_dir_button_coord(start);
     let end_coord = get_dir_button_coord(end);
-    let diff = end_coord.clone() - start_coord.clone();
+    let diff = &end_coord - &start_coord;
     queue.push_back((start_coord, String::new()));
 
     let (x_move, x_char) = if diff.x < 0 {
@@ -233,7 +233,7 @@ fn find_possible_paths(start: char, end: char) -> HashSet<String> {
             continue;
         }
 
-        let horizontal_move_pos = curr.clone() - x_move.clone();
+        let horizontal_move_pos = &curr - &x_move;
         if horizontal_move_pos != forbidden_pos
             && horizontal_move_pos.x >= 0
             && horizontal_move_pos.x <= 2
@@ -242,7 +242,7 @@ fn find_possible_paths(start: char, end: char) -> HashSet<String> {
             new_path.push(x_char);
             queue.push_back((horizontal_move_pos, new_path))
         }
-        let vertical_move_pos = curr.clone() - y_move.clone();
+        let vertical_move_pos = &curr - &y_move;
         if vertical_move_pos != forbidden_pos
             && vertical_move_pos.y >= 0
             && vertical_move_pos.y <= 1
@@ -275,7 +275,7 @@ fn find_possible_paths_numpad(start: char, end: char) -> HashSet<String> {
     let mut queue = VecDeque::new();
     let start_coord = get_numeric_button_coord(start);
     let end_coord = get_numeric_button_coord(end);
-    let diff = end_coord.clone() - start_coord.clone();
+    let diff = &end_coord - &start_coord;
     queue.push_back((start_coord, String::new()));
 
     let (x_move, x_char) = if diff.x < 0 {
@@ -298,7 +298,7 @@ fn find_possible_paths_numpad(start: char, end: char) -> HashSet<String> {
             continue;
         }
 
-        let horizontal_move_pos = curr.clone() - x_move.clone();
+        let horizontal_move_pos = &curr - &x_move;
         if horizontal_move_pos != forbidden_pos
             && horizontal_move_pos.x >= 0
             && horizontal_move_pos.x <= 2
@@ -307,7 +307,7 @@ fn find_possible_paths_numpad(start: char, end: char) -> HashSet<String> {
             new_path.push(x_char);
             queue.push_back((horizontal_move_pos, new_path))
         }
-        let vertical_move_pos = curr.clone() - y_move.clone();
+        let vertical_move_pos = &curr - &y_move;
         if vertical_move_pos != forbidden_pos
             && vertical_move_pos.y >= 0
             && vertical_move_pos.y <= 3

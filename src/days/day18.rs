@@ -48,7 +48,7 @@ fn find_path(byte_positions: &[Pos], end_pos: &Pos) -> HashMap<Pos, usize> {
         }
 
         for direction in DIRECTIONS.iter() {
-            let new_pos = curr_pos.clone() + direction.clone();
+            let new_pos = &curr_pos + direction;
 
             if new_pos.x < 0 || new_pos.y < 0 || new_pos.x > end_pos.x || new_pos.y > end_pos.y {
                 continue;
@@ -77,7 +77,7 @@ fn get_path(visited: &HashMap<Pos, usize>, end_pos: &Pos) -> Option<Vec<Pos>> {
         let mut next_pos = Pos { x: 0, y: 0 };
 
         for direction in DIRECTIONS.iter() {
-            let new_pos = curr_pos.clone() + direction.clone();
+            let new_pos = &curr_pos + direction;
             if let Some(steps) = visited.get(&new_pos) {
                 if *steps < min_steps {
                     min_steps = *steps;

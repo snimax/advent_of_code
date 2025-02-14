@@ -71,7 +71,7 @@ fn find_path_length(start_pos: &Pos, end_pos: &Pos, map: &Map<Space>) -> Vec<(Po
         path_length.push((curr_pos.clone(), steps));
         steps += 1;
         for dir in DIRECTIONS {
-            let next_pos = curr_pos.clone() + dir;
+            let next_pos = &curr_pos + &dir;
             if map.get(&next_pos) != Space::Wall && !visited.contains(&next_pos) {
                 curr_pos = next_pos;
                 break;
@@ -101,7 +101,7 @@ fn get_shortcuts(
                 if cheat_length > (max_cheat_length as usize) || cheat_length == 0 {
                     continue;
                 }
-                let shortcut_pos = pos.clone() + Pos { x, y };
+                let shortcut_pos = pos + &Pos { x, y };
 
                 if let Some(shortcut_len_to_end) = lookup.get(&shortcut_pos) {
                     if steps_to_end > shortcut_len_to_end {

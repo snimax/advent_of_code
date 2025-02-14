@@ -111,7 +111,7 @@ fn find_visited_positions(map: &Map, start_pos: &Pos, dir: &Dir) -> Option<HashS
     while let Some(val) = map.next(&curr_pos, &dir) {
         match val {
             b'.' => {
-                curr_pos = curr_pos + dir.clone();
+                curr_pos = &curr_pos + &dir;
                 visited_positions.insert(curr_pos.clone());
                 if path.contains(&(curr_pos.clone(), dir.clone())) {
                     return None;
@@ -142,7 +142,7 @@ fn part2(map: &mut Map, start_pos: &Pos) -> usize {
     while let Some(val) = map.next(&curr_pos, &dir) {
         match val {
             b'.' => {
-                let next_pos = curr_pos.clone() + dir.clone();
+                let next_pos = &curr_pos + &dir;
                 // No use in putting out obsticles where one already exists
                 if map.get(&next_pos) == b'#' {
                     continue;

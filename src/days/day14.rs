@@ -60,7 +60,7 @@ fn is_upper_range(x: i32, divider: i32) -> Option<bool> {
 fn part1(map_size: &Pos, robots: &[Robot]) -> usize {
     let mut final_positions = Vec::new();
     for robot in robots {
-        let moved_pos = robot.pos.clone() + robot.dir.clone() * 100;
+        let moved_pos = &robot.pos + &(&robot.dir * 100);
 
         let mut new_x = moved_pos.x % map_size.x;
         let mut new_y = moved_pos.y % map_size.y;
@@ -140,7 +140,7 @@ fn part2(map_size: &Pos, robots: &[Robot]) -> usize {
         && steps < steps_for_repeating_pattern
     {
         for robot in curr_position_robots.iter_mut() {
-            let new_pos = robot.pos.clone() + robot.dir.clone();
+            let new_pos = &robot.pos + &robot.dir;
             let mut new_x = new_pos.x % map_size.x;
             let mut new_y = new_pos.y % map_size.y;
             if new_x < 0 {

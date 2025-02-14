@@ -22,35 +22,35 @@ pub struct Pos {
     pub y: i32,
 }
 
-impl Add for Pos {
-    type Output = Self;
+impl<'a> Add<&'a Pos> for &Pos {
+    type Output = Pos;
 
-    fn add(self, rhs: Self) -> Self::Output {
-        Self {
-            x: self.x + rhs.x,
-            y: self.y + rhs.y,
+    fn add(self, other: &'a Pos) -> Pos {
+        Pos {
+            x: self.x + other.x,
+            y: self.y + other.y,
         }
     }
 }
 
-impl Sub for Pos {
-    type Output = Self;
+impl<'a> Sub<&'a Pos> for &Pos {
+    type Output = Pos;
 
-    fn sub(self, rhs: Self) -> Self::Output {
-        Self {
-            x: self.x - rhs.x,
-            y: self.y - rhs.y,
+    fn sub(self, other: &'a Pos) -> Pos {
+        Pos {
+            x: self.x - other.x,
+            y: self.y - other.y,
         }
     }
 }
 
-impl Mul<i32> for Pos {
-    type Output = Self;
+impl Mul<i32> for &Pos {
+    type Output = Pos;
 
-    fn mul(self, rhs: i32) -> Self::Output {
-        Self {
-            x: self.x * rhs,
-            y: self.y * rhs,
+    fn mul(self, other: i32) -> Pos {
+        Pos {
+            x: self.x * other,
+            y: self.y * other,
         }
     }
 }
