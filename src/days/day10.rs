@@ -1,4 +1,4 @@
-use super::{parse_file, parse_lines, Map, Pos, DOWN, LEFT, RIGHT, UP};
+use super::{parse_file, parse_lines, Map, Pos};
 use std::collections::{HashSet, VecDeque};
 
 pub fn solve() {
@@ -72,40 +72,14 @@ fn find_trailheads(map: &Map<i32>, start_pos: &Pos, all_permutations: bool) -> u
             if map.get(&pos) == 9 {
                 trailheads += 1;
             } else {
-                get_neighbors(&pos, map)
+                let new_height = map.get(&pos) + 1;
+                map.get_neighbors_cmp(&pos, &new_height)
                     .iter()
                     .for_each(|neighbor| queue.push_front(neighbor.clone()));
             }
         }
     }
     trailheads
-}
-
-fn get_neighbors(pos: &Pos, map: &Map<i32>) -> Vec<Pos> {
-    let mut valid_neighbors = Vec::new();
-    let next_height = map.get(pos) + 1;
-
-    let mut next_pos = pos + UP;
-    if map.valid_pos(&next_pos) && map.get(&next_pos) == next_height {
-        valid_neighbors.push(next_pos);
-    }
-
-    next_pos = pos + DOWN;
-    if map.valid_pos(&next_pos) && map.get(&next_pos) == next_height {
-        valid_neighbors.push(next_pos);
-    }
-
-    next_pos = pos + LEFT;
-    if map.valid_pos(&next_pos) && map.get(&next_pos) == next_height {
-        valid_neighbors.push(next_pos);
-    }
-
-    next_pos = pos + RIGHT;
-    if map.valid_pos(&next_pos) && map.get(&next_pos) == next_height {
-        valid_neighbors.push(next_pos);
-    }
-
-    valid_neighbors
 }
 
 fn part2(map: &Map<i32>, starting_positions: &[Pos]) -> usize {

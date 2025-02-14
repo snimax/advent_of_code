@@ -1,5 +1,5 @@
-use super::dir::Dir;
-use super::pos::Pos;
+use super::dir::*;
+use super::pos::*;
 
 #[derive(Clone)]
 pub struct Map<T: Copy> {
@@ -33,5 +33,21 @@ impl<T: Copy> Map<T> {
             return false;
         }
         true
+    }
+
+    pub fn get_neighbors_cmp(&self, pos: &Pos, cmp_val: &T) -> Vec<Pos>
+    where
+        T: std::cmp::PartialEq,
+    {
+        let mut valid_neighbors = Vec::new();
+
+        for &dir in DIRECTIONS.iter() {
+            let neighbor_pos = pos + dir;
+            if self.valid_pos(&neighbor_pos) && self.get(&neighbor_pos) == *cmp_val {
+                valid_neighbors.push(neighbor_pos);
+            }
+        }
+
+        valid_neighbors
     }
 }

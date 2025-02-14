@@ -1,4 +1,4 @@
-use super::pos::Pos;
+use super::pos::*;
 use std::ops::{Add, AddAssign, Deref, DerefMut, Mul, Sub, SubAssign};
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord)]

@@ -1,4 +1,4 @@
-use super::{parse_file, parse_lines, Map, Pos, DOWN, LEFT, RIGHT, UP};
+use super::{parse_file, parse_lines, Map, Pos};
 use std::collections::{HashSet, VecDeque};
 
 pub fn solve() {
@@ -29,32 +29,6 @@ fn parse_map(lines: &[String]) -> Map<u8> {
     }
 }
 
-fn get_neighbors(pos: &Pos, plant_type: &u8, map: &Map<u8>) -> Vec<Pos> {
-    let mut valid_neighbors = Vec::new();
-
-    let mut next_pos = pos + UP;
-    if map.valid_pos(&next_pos) && map.get(&next_pos) == *plant_type {
-        valid_neighbors.push(next_pos);
-    }
-
-    next_pos = pos + DOWN;
-    if map.valid_pos(&next_pos) && map.get(&next_pos) == *plant_type {
-        valid_neighbors.push(next_pos);
-    }
-
-    next_pos = pos + LEFT;
-    if map.valid_pos(&next_pos) && map.get(&next_pos) == *plant_type {
-        valid_neighbors.push(next_pos);
-    }
-
-    next_pos = pos + RIGHT;
-    if map.valid_pos(&next_pos) && map.get(&next_pos) == *plant_type {
-        valid_neighbors.push(next_pos);
-    }
-
-    valid_neighbors
-}
-
 fn map_region(map: &Map<u8>, start_pos: &Pos) -> (u8, HashSet<Pos>) {
     let mut queue = VecDeque::new();
     let mut visited = HashSet::new();
@@ -62,7 +36,7 @@ fn map_region(map: &Map<u8>, start_pos: &Pos) -> (u8, HashSet<Pos>) {
     queue.push_back(start_pos.clone());
     while let Some(pos) = queue.pop_front() {
         if visited.insert(pos.clone()) {
-            get_neighbors(&pos, &plant_type, map)
+            map.get_neighbors_cmp(&pos, &plant_type)
                 .iter()
                 .for_each(|neighbor| queue.push_front(neighbor.clone()));
         }
@@ -97,7 +71,7 @@ fn part1(map: &Map<u8>) -> usize {
     for (plant_type, region) in regions.iter() {
         let mut perimiters = 0;
         for pos in region.iter() {
-            perimiters += 4 - get_neighbors(pos, plant_type, map).len();
+            perimiters += 4 - map.get_neighbors_cmp(pos, plant_type).len();
         }
         result += perimiters * region.len();
     }
