@@ -181,7 +181,7 @@ fn find_optimal_paths(
             smallest_cost = smallest_cost.min(cost);
         }
 
-        for d in DIRECTIONS.iter() {
+        for &d in DIRECTIONS.iter() {
             let new_pos = &curr_pos + d;
             if map.get(&new_pos) == Space::Wall {
                 continue;
@@ -189,7 +189,7 @@ fn find_optimal_paths(
 
             let mut new_cost = cost + 1;
             let (cw, ccw) = rotate(curr_dir);
-            if *d == cw || *d == ccw {
+            if d == cw || d == ccw {
                 new_cost += 1000;
             }
 
@@ -205,7 +205,7 @@ fn find_optimal_paths(
                 },
                 None => true,
             } {
-                let key = (new_pos.clone(), *d);
+                let key = (new_pos.clone(), d);
                 best_costs_found.insert(key.clone(), new_cost);
                 predecessors.insert(key, vec![(curr_pos.clone(), curr_dir)]);
             } else if let Some(p) = predecessors.get_mut(&(new_pos.clone(), d)) {

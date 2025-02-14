@@ -1,6 +1,6 @@
 use std::fs;
 use std::io::Error;
-use std::ops::{Add, Div, Mul, Sub};
+use std::ops::{Add, Div, Mul, Sub, Deref, DerefMut};
 
 pub fn parse_file(file: &str) -> Result<String, Error> {
     fs::read_to_string(file)
@@ -55,12 +55,66 @@ impl Mul<i32> for &Pos {
     }
 }
 
-pub type Dir = Pos;
+#[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord)]
+pub struct Dir(pub Pos);
 
-pub const UP: &Dir = &Dir { x: 0, y: -1 };
-pub const DOWN: &Dir = &Dir { x: 0, y: 1 };
-pub const LEFT: &Dir = &Dir { x: -1, y: 0 };
-pub const RIGHT: &Dir = &Dir { x: 1, y: 0 };
+impl Dir {
+    pub const fn new(x: i32, y: i32) -> Self {
+        Dir(Pos {x, y})
+    }
+}
+
+impl Deref for Dir {
+    type Target = Pos;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+impl DerefMut for Dir {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
+}
+
+impl<'a> Add<&'a Dir> for &Pos {
+    type Output = Pos;
+
+    fn add(self, other: &'a Dir) -> Pos {
+        Pos {
+            x: self.x + other.x,
+            y: self.y + other.y,
+        }
+    }
+}
+
+impl<'a> Sub<&'a Dir> for &Pos {
+    type Output = Pos;
+
+    fn sub(self, other: &'a Dir) -> Pos {
+        Pos {
+            x: self.x - other.x,
+            y: self.y - other.y,
+        }
+    }
+}
+
+impl Mul<i32> for &Dir {
+    type Output = Pos;
+
+    fn mul(self, other: i32) -> Pos {
+        Pos {
+            x: self.x * other,
+            y: self.y * other,
+        }
+    }
+}
+
+pub const UP: &Dir = &Dir(Pos { x: 0, y: -1 });
+pub const DOWN: &Dir = &Dir(Pos { x: 0, y: 1 });
+pub const LEFT: &Dir = &Dir(Pos { x: -1, y: 0 });
+pub const RIGHT: &Dir = &Dir(Pos { x: 1, y: 0 });
 
 pub const DIRECTIONS: [&Dir; 4] = [UP, DOWN, LEFT, RIGHT];
 

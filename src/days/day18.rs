@@ -76,7 +76,7 @@ fn get_path(visited: &HashMap<Pos, usize>, end_pos: &Pos) -> Option<Vec<Pos>> {
         let mut min_steps = usize::MAX;
         let mut next_pos = Pos { x: 0, y: 0 };
 
-        for direction in DIRECTIONS.iter() {
+        for &direction in DIRECTIONS.iter() {
             let new_pos = &curr_pos + direction;
             if let Some(steps) = visited.get(&new_pos) {
                 if *steps < min_steps {

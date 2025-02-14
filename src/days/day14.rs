@@ -41,7 +41,7 @@ fn parse_map(lines: &[String]) -> Vec<Robot> {
 
         robots.push(Robot {
             pos: Pos { x: pos_x, y: pos_y },
-            dir: Dir { x: dir_x, y: dir_y },
+            dir: Dir::new(dir_x, dir_y),
         })
     }
 
@@ -205,71 +205,71 @@ p=9,5 v=-3,-3"#;
         let robots = [
             Robot {
                 pos: Pos { x: 0, y: 0 },
-                dir: Dir { x: 0, y: 0 },
+                dir: Dir::new(0, 0),
             },
             Robot {
                 pos: Pos { x: 4, y: 2 },
-                dir: Dir { x: 0, y: 0 },
+                dir: Dir::new(0, 0),
             },
             Robot {
                 pos: Pos { x: 1, y: 0 },
-                dir: Dir { x: 0, y: 0 },
+                dir: Dir::new(0, 0),
             },
             Robot {
                 pos: Pos { x: 0, y: 1 },
-                dir: Dir { x: 0, y: 0 },
+                dir: Dir::new(0, 0),
             },
             Robot {
                 pos: Pos { x: 1, y: 1 },
-                dir: Dir { x: 0, y: 0 },
+                dir: Dir::new(0, 0),
             },
             Robot {
                 pos: Pos { x: 3, y: 1 },
-                dir: Dir { x: 0, y: 0 },
+                dir: Dir::new(0, 0),
             },
             Robot {
                 pos: Pos { x: 0, y: 2 },
-                dir: Dir { x: 0, y: 0 },
+                dir: Dir::new(0, 0),
             },
             Robot {
                 pos: Pos { x: 1, y: 2 },
-                dir: Dir { x: 0, y: 0 },
+                dir: Dir::new(0, 0),
             },
             Robot {
                 pos: Pos { x: 2, y: 2 },
-                dir: Dir { x: 0, y: 0 },
+                dir: Dir::new(0, 0),
             },
             Robot {
                 pos: Pos { x: 3, y: 2 },
-                dir: Dir { x: 0, y: 0 },
+                dir: Dir::new(0, 0),
             },
             Robot {
                 pos: Pos { x: 5, y: 2 },
-                dir: Dir { x: 0, y: 0 },
+                dir: Dir::new(0, 0),
             },
             Robot {
                 pos: Pos { x: 6, y: 2 },
-                dir: Dir { x: 0, y: 0 },
+                dir: Dir::new(0, 0),
             },
             Robot {
                 pos: Pos { x: 7, y: 2 },
-                dir: Dir { x: 0, y: 0 },
+                dir: Dir::new(0, 0),
             },
             Robot {
                 pos: Pos { x: 8, y: 2 },
-                dir: Dir { x: 0, y: 0 },
+                dir: Dir::new(0, 0),
             },
             Robot {
                 pos: Pos { x: 9, y: 2 },
-                dir: Dir { x: 0, y: 0 },
+                dir: Dir::new(0, 0),
             },
             Robot {
                 pos: Pos { x: 10, y: 2 },
-                dir: Dir { x: 0, y: 0 },
+                dir: Dir::new(0, 0),
             },
             Robot {
                 pos: Pos { x: 11, y: 2 },
-                dir: Dir { x: 0, y: 0 },
+                dir: Dir::new(0, 0),
             },
         ];
         assert_eq!(found_multiple_robots_in_a_row(&robots), true);
