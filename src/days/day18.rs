@@ -1,4 +1,4 @@
-use advent_of_code_2024::{parse_file, parse_lines, Pos, DIRECTIONS};
+use super::{ parse_file, parse_lines, pos::Pos, dir::DIRECTIONS};
 use std::collections::{HashMap, VecDeque};
 
 pub fn solve() {

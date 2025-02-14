@@ -1,4 +1,4 @@
-use advent_of_code_2024::{
+use super::{
     parse_file, parse_lines, Dir, Map, Pos, DIRECTIONS, DOWN, LEFT, RIGHT, UP,
 };
 use std::{

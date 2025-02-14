@@ -1,4 +1,4 @@
-use advent_of_code_2024::{cramers_rule, parse_file, parse_lines, Equation, Pos};
+use super::{cramers_rule, parse_file, parse_lines, Equation, Pos};
 
 pub fn solve() {
     if let Ok(line_string) = parse_file("Inputs/day13.txt") {

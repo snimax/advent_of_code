@@ -1,4 +1,4 @@
-use advent_of_code_2024::parse_file;
+use super::parse_file;
 use std::collections::HashMap;
 
 pub fn solve() {

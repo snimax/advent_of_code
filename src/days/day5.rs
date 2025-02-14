@@ -1,4 +1,4 @@
-use advent_of_code_2024::{parse_file, parse_lines};
+use super::{parse_file, parse_lines};
 use std::{cmp::Ordering, collections::HashMap};
 
 pub fn solve() {

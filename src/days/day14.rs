@@ -1,4 +1,4 @@
-use advent_of_code_2024::{parse_file, parse_lines, Dir, Pos};
+use super::{parse_file, parse_lines, Dir, Pos};
 
 pub fn solve() {
     if let Ok(line_string) = parse_file("Inputs/day14.txt") {
