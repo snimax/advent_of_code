@@ -1,4 +1,4 @@
-use advent_of_code_2024::{parse_file, parse_lines, Dir, Pos, DOWN, LEFT, RIGHT, UP};
+use advent_of_code_2024::{parse_file, parse_lines, Dir, Pos, DOWN, LEFT, RIGHT, UP, Map};
 use std::collections::HashSet;
 
 pub fn solve() {
@@ -26,42 +26,7 @@ fn turn_right(dir: &mut &Dir) {
     }
 }
 
-#[derive(Clone)]
-struct Map {
-    map: Vec<Vec<u8>>,
-    size_x: usize,
-    size_y: usize,
-}
-
-impl Map {
-    fn next(&self, curr_pos: &Pos, dir: &Dir) -> Option<u8> {
-        let new_pos = Pos {
-            x: curr_pos.x + dir.x,
-            y: curr_pos.y + dir.y,
-        };
-        match self.valid_pos(&new_pos) {
-            false => None,
-            true => Some(self.get(&new_pos)),
-        }
-    }
-
-    fn get(&self, pos: &Pos) -> u8 {
-        self.map[pos.y as usize][pos.x as usize]
-    }
-
-    fn set(&mut self, pos: &Pos, val: u8) {
-        self.map[pos.y as usize][pos.x as usize] = val;
-    }
-
-    fn valid_pos(&self, pos: &Pos) -> bool {
-        if pos.x < 0 || pos.y < 0 || pos.x >= self.size_x as i32 || pos.y >= self.size_y as i32 {
-            return false;
-        }
-        true
-    }
-}
-
-fn parse_map(lines: &[String]) -> (Map, Pos) {
+fn parse_map(lines: &[String]) -> (Map<u8>, Pos) {
     let size_y = lines.len();
     let size_x = lines[0].len();
 
@@ -95,7 +60,7 @@ fn parse_map(lines: &[String]) -> (Map, Pos) {
     )
 }
 
-fn find_visited_positions(map: &Map, start_pos: &Pos, dir: &Dir) -> Option<HashSet<Pos>> {
+fn find_visited_positions(map: &Map<u8>, start_pos: &Pos, dir: &Dir) -> Option<HashSet<Pos>> {
     let mut curr_pos = start_pos.clone();
     let mut dir = dir;
 
@@ -122,12 +87,12 @@ fn find_visited_positions(map: &Map, start_pos: &Pos, dir: &Dir) -> Option<HashS
     Some(visited_positions)
 }
 
-fn part1(map: &Map, start_pos: &Pos) -> usize {
+fn part1(map: &Map<u8>, start_pos: &Pos) -> usize {
     let visited_positions = find_visited_positions(map, start_pos, UP);
     visited_positions.unwrap().len()
 }
 
-fn part2(map: &mut Map, start_pos: &Pos) -> usize {
+fn part2(map: &mut Map<u8>, start_pos: &Pos) -> usize {
     let mut curr_pos = start_pos.clone();
     let mut dir = UP;
 
@@ -168,7 +133,7 @@ fn part2(map: &mut Map, start_pos: &Pos) -> usize {
 mod tests {
     use super::*;
 
-    fn get_input() -> (Map, Pos) {
+    fn get_input() -> (Map<u8>, Pos) {
         let input = r#"....#.....
 .........#
 ..........
