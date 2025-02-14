@@ -1,4 +1,4 @@
-use advent_of_code_2024::{parse_file, parse_lines, Pos};
+use advent_of_code_2024::{parse_file, parse_lines, Dir, Pos, DOWN, LEFT, RIGHT, UP};
 use std::collections::HashSet;
 
 pub fn solve() {
@@ -6,20 +6,17 @@ pub fn solve() {
         let lines = parse_lines(&line_string);
         let (mut map, start_pos) = parse_map(&lines);
         println!("Part1 solution: {}", part1(&map, &start_pos));
+        use std::time::Instant;
+        let now = Instant::now();
         println!("Part2 solution: {}", part2(&mut map, &start_pos));
+        let elapsed = now.elapsed();
+        println!("Elapsed: {:?}", elapsed);
     } else {
         println!("Could not parse file");
     }
 }
 
-type Dir = Pos;
-
-const UP: Dir = Dir { x: 0, y: -1 };
-const DOWN: Dir = Dir { x: 0, y: 1 };
-const LEFT: Dir = Dir { x: -1, y: 0 };
-const RIGHT: Dir = Dir { x: 1, y: 0 };
-
-fn turn_right(dir: &mut Dir) {
+fn turn_right(dir: &mut &Dir) {
     *dir = match *dir {
         UP => RIGHT,
         RIGHT => DOWN,
@@ -100,7 +97,7 @@ fn parse_map(lines: &[String]) -> (Map, Pos) {
 
 fn find_visited_positions(map: &Map, start_pos: &Pos, dir: &Dir) -> Option<HashSet<Pos>> {
     let mut curr_pos = start_pos.clone();
-    let mut dir = dir.clone();
+    let mut dir = dir;
 
     let mut visited_positions = HashSet::new();
     visited_positions.insert(curr_pos.clone());
@@ -108,10 +105,10 @@ fn find_visited_positions(map: &Map, start_pos: &Pos, dir: &Dir) -> Option<HashS
     let mut path = HashSet::new();
     path.insert((curr_pos.clone(), dir.clone()));
 
-    while let Some(val) = map.next(&curr_pos, &dir) {
+    while let Some(val) = map.next(&curr_pos, dir) {
         match val {
             b'.' => {
-                curr_pos = &curr_pos + &dir;
+                curr_pos = &curr_pos + dir;
                 visited_positions.insert(curr_pos.clone());
                 if path.contains(&(curr_pos.clone(), dir.clone())) {
                     return None;
@@ -126,7 +123,7 @@ fn find_visited_positions(map: &Map, start_pos: &Pos, dir: &Dir) -> Option<HashS
 }
 
 fn part1(map: &Map, start_pos: &Pos) -> usize {
-    let visited_positions = find_visited_positions(map, start_pos, &UP);
+    let visited_positions = find_visited_positions(map, start_pos, UP);
     visited_positions.unwrap().len()
 }
 
@@ -139,10 +136,10 @@ fn part2(map: &mut Map, start_pos: &Pos) -> usize {
 
     let mut result = 0;
 
-    while let Some(val) = map.next(&curr_pos, &dir) {
+    while let Some(val) = map.next(&curr_pos, dir) {
         match val {
             b'.' => {
-                let next_pos = &curr_pos + &dir;
+                let next_pos = &curr_pos + dir;
                 // No use in putting out obsticles where one already exists
                 if map.get(&next_pos) == b'#' {
                     continue;
@@ -150,7 +147,7 @@ fn part2(map: &mut Map, start_pos: &Pos) -> usize {
 
                 if !visited_positions.contains(&next_pos) {
                     map.set(&next_pos, b'#');
-                    if find_visited_positions(map, &curr_pos, &dir).is_none() {
+                    if find_visited_positions(map, &curr_pos, dir).is_none() {
                         result += 1
                     }
                     map.set(&next_pos, b'.');

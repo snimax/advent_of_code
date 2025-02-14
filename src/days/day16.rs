@@ -61,8 +61,8 @@ fn parse_map(lines: &[String]) -> (Pos, Pos, Map<Space>) {
     )
 }
 
-fn rotate(dir: &Dir) -> (Dir, Dir) {
-    if *dir == UP || *dir == DOWN {
+fn rotate(dir: &Dir) -> (&Dir, &Dir) {
+    if dir == UP || dir == DOWN {
         (LEFT, RIGHT)
     } else {
         (UP, DOWN)
@@ -76,7 +76,7 @@ fn find_straighetest_path(
     map: &Map<Space>,
 ) -> usize {
     let mut queue = VecDeque::new();
-    queue.push_back((curr_pos.clone(), curr_dir.clone(), 0));
+    queue.push_back((curr_pos.clone(), curr_dir, 0));
     let mut visited = HashMap::new();
 
     while let Some((curr_pos, curr_dir, steps)) = queue.pop_front() {
@@ -92,13 +92,13 @@ fn find_straighetest_path(
             visited.insert(curr_pos.clone(), (curr_dir.clone(), steps));
         }
 
-        let (cw, ccw) = rotate(&curr_dir);
-        let neighbor_cw = &curr_pos + &cw;
-        let neighbor_ccw = &curr_pos + &ccw;
-        let next_pos = &curr_pos + &curr_dir;
+        let (cw, ccw) = rotate(curr_dir);
+        let neighbor_cw = &curr_pos + cw;
+        let neighbor_ccw = &curr_pos + ccw;
+        let next_pos = &curr_pos + curr_dir;
 
         if map.get(&next_pos) != Space::Wall {
-            queue.push_back((next_pos, curr_dir.clone(), steps + 1));
+            queue.push_back((next_pos, curr_dir, steps + 1));
         }
         if map.get(&neighbor_cw) != Space::Wall {
             queue.push_back((neighbor_cw, cw, steps + 1001));
@@ -112,7 +112,7 @@ fn find_straighetest_path(
 }
 
 fn part1(start_pos: &Pos, end_pos: &Pos, map: &Map<Space>) -> usize {
-    find_straighetest_path(start_pos, &RIGHT, end_pos, map)
+    find_straighetest_path(start_pos, RIGHT, end_pos, map)
 }
 
 fn part2(start_pos: &Pos, end_pos: &Pos, map: &Map<Space>) -> usize {
@@ -131,7 +131,7 @@ fn part2(start_pos: &Pos, end_pos: &Pos, map: &Map<Space>) -> usize {
 #[derive(Debug, PartialEq, Eq, Clone)]
 struct Node {
     pos: Pos,
-    dir: Dir,
+    dir: &'static Dir,
     cost: usize,
 }
 
@@ -147,9 +147,13 @@ impl PartialOrd for Node {
     }
 }
 
-fn find_optimal_paths(start_pos: &Pos, end_pos: &Pos, map: &Map<Space>) -> Vec<Vec<(Pos, Dir)>> {
-    let mut best_costs_found: HashMap<(Pos, Dir), usize> = HashMap::new();
-    let mut predecessors: HashMap<(Pos, Dir), Vec<(Pos, Dir)>> = HashMap::new();
+fn find_optimal_paths(
+    start_pos: &Pos,
+    end_pos: &Pos,
+    map: &Map<Space>,
+) -> Vec<Vec<(Pos, &'static Dir)>> {
+    let mut best_costs_found: HashMap<(Pos, &Dir), usize> = HashMap::new();
+    let mut predecessors: HashMap<(Pos, &Dir), Vec<(Pos, &Dir)>> = HashMap::new();
     let mut smallest_cost = usize::MAX;
 
     let mut queue = BinaryHeap::new();
@@ -167,7 +171,7 @@ fn find_optimal_paths(start_pos: &Pos, end_pos: &Pos, map: &Map<Space>) -> Vec<V
     {
         if cost
             > *best_costs_found
-                .get(&(curr_pos.clone(), curr_dir.clone()))
+                .get(&(curr_pos.clone(), curr_dir))
                 .unwrap_or(&usize::MAX)
         {
             continue;
@@ -184,7 +188,7 @@ fn find_optimal_paths(start_pos: &Pos, end_pos: &Pos, map: &Map<Space>) -> Vec<V
             }
 
             let mut new_cost = cost + 1;
-            let (cw, ccw) = rotate(&curr_dir);
+            let (cw, ccw) = rotate(curr_dir);
             if *d == cw || *d == ccw {
                 new_cost += 1000;
             }
@@ -193,7 +197,7 @@ fn find_optimal_paths(start_pos: &Pos, end_pos: &Pos, map: &Map<Space>) -> Vec<V
                 continue;
             }
 
-            if match best_costs_found.get(&(new_pos.clone(), d.clone())) {
+            if match best_costs_found.get(&(new_pos.clone(), d)) {
                 Some(cached_cost) => match new_cost.cmp(cached_cost) {
                     Ordering::Less => true,
                     Ordering::Equal => false,
@@ -201,18 +205,18 @@ fn find_optimal_paths(start_pos: &Pos, end_pos: &Pos, map: &Map<Space>) -> Vec<V
                 },
                 None => true,
             } {
-                let key = (new_pos.clone(), d.clone());
+                let key = (new_pos.clone(), *d);
                 best_costs_found.insert(key.clone(), new_cost);
-                predecessors.insert(key, vec![(curr_pos.clone(), curr_dir.clone())]);
-            } else if let Some(p) = predecessors.get_mut(&(new_pos.clone(), d.clone())) {
-                if !p.contains(&(curr_pos.clone(), curr_dir.clone())) {
-                    p.push((curr_pos.clone(), curr_dir.clone()));
+                predecessors.insert(key, vec![(curr_pos.clone(), curr_dir)]);
+            } else if let Some(p) = predecessors.get_mut(&(new_pos.clone(), d)) {
+                if !p.contains(&(curr_pos.clone(), curr_dir)) {
+                    p.push((curr_pos.clone(), curr_dir));
                 }
             }
 
             queue.push(Node {
                 pos: new_pos,
-                dir: d.clone(),
+                dir: d,
                 cost: new_cost,
             });
         }
@@ -221,12 +225,9 @@ fn find_optimal_paths(start_pos: &Pos, end_pos: &Pos, map: &Map<Space>) -> Vec<V
     let mut optimal_paths = Vec::new();
     let mut stack = VecDeque::new();
 
-    for d in DIRECTIONS.iter() {
-        if best_costs_found.contains_key(&(end_pos.clone(), d.clone())) {
-            stack.push_back((
-                vec![(end_pos.clone(), d.clone())],
-                (end_pos.clone(), d.clone()),
-            ));
+    for &d in DIRECTIONS.iter() {
+        if best_costs_found.contains_key(&(end_pos.clone(), d)) {
+            stack.push_back((vec![(end_pos.clone(), d)], (end_pos.clone(), d)));
         }
     }
 
@@ -238,8 +239,8 @@ fn find_optimal_paths(start_pos: &Pos, end_pos: &Pos, map: &Map<Space>) -> Vec<V
         } else if let Some(prev_nodes) = predecessors.get(&curr_node) {
             for (prev_pos, prev_dir) in prev_nodes {
                 let mut new_path = curr_path.clone();
-                new_path.push((prev_pos.clone(), prev_dir.clone()));
-                stack.push_back((new_path, (prev_pos.clone(), prev_dir.clone())));
+                new_path.push((prev_pos.clone(), prev_dir));
+                stack.push_back((new_path, (prev_pos.clone(), prev_dir)));
             }
         }
     }

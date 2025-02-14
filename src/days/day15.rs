@@ -23,7 +23,7 @@ type Walls = HashSet<Wall>;
 type Box = (usize, Pos);
 type Boxes = Vec<Box>;
 
-fn parse_map(lines: &[String]) -> (Pos, Walls, Boxes, Vec<Dir>) {
+fn parse_map(lines: &[String]) -> (Pos, Walls, Boxes, Vec<&'static Dir>) {
     let mut boxes = Boxes::new();
     let mut walls = Walls::new();
     let mut instructions = Vec::new();
@@ -70,7 +70,7 @@ fn parse_map(lines: &[String]) -> (Pos, Walls, Boxes, Vec<Dir>) {
     (robot_pos, walls, boxes, instructions)
 }
 
-fn part1(start_robot_pos: &Pos, walls: &Walls, boxes: &Boxes, instructions: &[Dir]) -> usize {
+fn part1(start_robot_pos: &Pos, walls: &Walls, boxes: &Boxes, instructions: &[&Dir]) -> usize {
     let mut curr_robot_pos = start_robot_pos.clone();
     let mut curr_box_positions = boxes.clone();
 
@@ -220,7 +220,7 @@ enum Collision<'a> {
 
 fn find_overlapping_objects<'a>(robot_pos: &Pos, boxes: &'a Boxes, walls: &Walls) -> Collision<'a> {
     for b in boxes.iter() {
-        if b.1 == *robot_pos || &b.1 + &RIGHT == *robot_pos {
+        if b.1 == *robot_pos || &b.1 + RIGHT == *robot_pos {
             return Collision::Box(b);
         }
     }
@@ -231,8 +231,8 @@ fn find_overlapping_objects<'a>(robot_pos: &Pos, boxes: &'a Boxes, walls: &Walls
 }
 
 fn items_overlapping(box1: &Box, box2: &Box) -> bool {
-    let pos1_end = &box1.1 + &RIGHT;
-    let pos2_end = &box2.1 + &RIGHT;
+    let pos1_end = &box1.1 + RIGHT;
+    let pos2_end = &box2.1 + RIGHT;
 
     pos1_end == box2.1 || pos2_end == box1.1 || box1.1 == box2.1
 }
@@ -261,7 +261,7 @@ fn move_boxes(dir: &Dir, walls: &Walls, moved_boxes: &[usize], boxes: &Boxes) ->
             let mut new_moved_boxes = moved_boxes.to_owned();
             new_moved_boxes.push(box1.0);
             let new_pos = &box1.1 + dir;
-            let new_pos2 = &new_pos + &RIGHT;
+            let new_pos2 = &new_pos + RIGHT;
             if walls.contains(&new_pos) || walls.contains(&new_pos2) {
                 return None;
             }
@@ -274,7 +274,7 @@ fn move_boxes(dir: &Dir, walls: &Walls, moved_boxes: &[usize], boxes: &Boxes) ->
         }
         if !box2_moved_already {
             let new_pos = &box2.1 + dir;
-            let new_pos2 = &new_pos + &RIGHT;
+            let new_pos2 = &new_pos + RIGHT;
             let mut new_moved_boxes = moved_boxes.to_owned();
             new_moved_boxes.push(box2.0);
             if walls.contains(&new_pos) || walls.contains(&new_pos2) {
@@ -302,7 +302,7 @@ fn try_recursive_move_in_dir(robot_pos: &mut Pos, boxes: &mut Boxes, walls: &Wal
         Collision::Box(b) => {
             let mut new_boxes = boxes.clone();
             let new_obj_pos = &b.1 + dir;
-            let new_obj_pos2 = &new_obj_pos + &RIGHT;
+            let new_obj_pos2 = &new_obj_pos + RIGHT;
             if walls.contains(&new_obj_pos) || walls.contains(&new_obj_pos2) {
                 return;
             }
@@ -320,7 +320,7 @@ fn try_recursive_move_in_dir(robot_pos: &mut Pos, boxes: &mut Boxes, walls: &Wal
     }
 }
 
-fn part2(start_robot_pos: &Pos, walls: &Walls, boxes: &Boxes, instructions: &[Dir]) -> usize {
+fn part2(start_robot_pos: &Pos, walls: &Walls, boxes: &Boxes, instructions: &[&Dir]) -> usize {
     let (mut curr_robot_pos, mut boxes, walls) = grow_map(start_robot_pos, boxes, walls);
 
     for instruction in instructions.iter() {
@@ -335,7 +335,7 @@ fn part2(start_robot_pos: &Pos, walls: &Walls, boxes: &Boxes, instructions: &[Di
 #[cfg(test)]
 mod tests {
     use super::*;
-    fn get_smallest_input() -> (Pos, Walls, Boxes, Vec<Dir>) {
+    fn get_smallest_input() -> (Pos, Walls, Boxes, Vec<&'static Dir>) {
         let input = r#"#######
 #...#.#
 #.....#
@@ -349,7 +349,7 @@ mod tests {
         parse_map(&lines)
     }
 
-    fn get_small_input() -> (Pos, Walls, Boxes, Vec<Dir>) {
+    fn get_small_input() -> (Pos, Walls, Boxes, Vec<&'static Dir>) {
         let input = r#"########
 #..O.O.#
 ##@.O..#
@@ -365,7 +365,7 @@ mod tests {
         parse_map(&lines)
     }
 
-    fn get_large_input() -> (Pos, Walls, Boxes, Vec<Dir>) {
+    fn get_large_input() -> (Pos, Walls, Boxes, Vec<&'static Dir>) {
         let input = r#"##########
 #..O..O.O#
 #......O.#

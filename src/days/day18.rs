@@ -47,7 +47,7 @@ fn find_path(byte_positions: &[Pos], end_pos: &Pos) -> HashMap<Pos, usize> {
             visited.insert(curr_pos.clone(), steps);
         }
 
-        for direction in DIRECTIONS.iter() {
+        for &direction in DIRECTIONS.iter() {
             let new_pos = &curr_pos + direction;
 
             if new_pos.x < 0 || new_pos.y < 0 || new_pos.x > end_pos.x || new_pos.y > end_pos.y {

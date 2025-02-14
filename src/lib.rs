@@ -57,24 +57,24 @@ impl Mul<i32> for &Pos {
 
 pub type Dir = Pos;
 
-pub const UP: Dir = Dir { x: 0, y: -1 };
-pub const DOWN: Dir = Dir { x: 0, y: 1 };
-pub const LEFT: Dir = Dir { x: -1, y: 0 };
-pub const RIGHT: Dir = Dir { x: 1, y: 0 };
+pub const UP: &Dir = &Dir { x: 0, y: -1 };
+pub const DOWN: &Dir = &Dir { x: 0, y: 1 };
+pub const LEFT: &Dir = &Dir { x: -1, y: 0 };
+pub const RIGHT: &Dir = &Dir { x: 1, y: 0 };
 
-pub const DIRECTIONS: [Dir; 4] = [UP, DOWN, LEFT, RIGHT];
+pub const DIRECTIONS: [&Dir; 4] = [UP, DOWN, LEFT, RIGHT];
 
-pub fn get_opposite_dir(dir: &Dir) -> Dir {
-    if *dir == UP {
+pub fn get_opposite_dir(dir: &Dir) -> &Dir {
+    if dir == UP {
         return DOWN;
     }
-    if *dir == DOWN {
+    if dir == DOWN {
         return UP;
     }
-    if *dir == LEFT {
+    if dir == LEFT {
         return RIGHT;
     }
-    if *dir == RIGHT {
+    if dir == RIGHT {
         return LEFT;
     }
 
@@ -82,16 +82,16 @@ pub fn get_opposite_dir(dir: &Dir) -> Dir {
 }
 
 pub fn get_dir_name(dir: &Dir) -> &str {
-    if *dir == UP {
+    if dir == UP {
         return "Down";
     }
-    if *dir == DOWN {
+    if dir == DOWN {
         return "Up";
     }
-    if *dir == LEFT {
+    if dir == LEFT {
         return "Right";
     }
-    if *dir == RIGHT {
+    if dir == RIGHT {
         return "Left";
     }
 
