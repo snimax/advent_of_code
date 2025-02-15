@@ -1,8 +1,10 @@
-use super::{parse_file, parse_lines};
+use crate::years::AdventDay;
 
-pub fn solve() {
-    if let Ok(line_string) = parse_file("Inputs/day17.txt") {
-        let lines = parse_lines(&line_string);
+pub struct Day17 {}
+
+impl AdventDay for Day17 {
+    fn solve(&self) {
+        let lines = self.get_input();
         let (registers, program) = parse_program(&lines);
 
         let (_, part1_solution) = part1(&registers, &program);
@@ -10,8 +12,10 @@ pub fn solve() {
 
         println!("Part1 solution: {part1_solution}",);
         println!("Part2 solution: {}", registers.a);
-    } else {
-        println!("Could not parse file");
+    }
+
+    fn get_input_path(&self) -> &str {
+        "Inputs/2024/day17.txt"
     }
 }
 
@@ -187,6 +191,7 @@ fn part2(program: &Program) -> (Registers, String) {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::library::*;
 
     fn get_example() -> (Registers, Program) {
         let input = r#"Register A: 729

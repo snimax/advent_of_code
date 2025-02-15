@@ -1,14 +1,18 @@
-use super::{parse_file, parse_lines};
+use crate::years::AdventDay;
 use std::{cmp::Ordering, collections::HashMap};
 
-pub fn solve() {
-    if let Ok(line_string) = parse_file("Inputs/day5.txt") {
-        let lines = parse_lines(&line_string);
+pub struct Day5 {}
+
+impl AdventDay for Day5 {
+    fn solve(&self) {
+        let lines = self.get_input();
         let input = parse_input(&lines);
         println!("Part1 solution: {}", part1(&input.0, &input.1));
         println!("Part2 solution: {}", part2(&input.0, &input.1));
-    } else {
-        println!("Could not parse file");
+    }
+
+    fn get_input_path(&self) -> &str {
+        "Inputs/2024/day5.txt"
     }
 }
 
@@ -102,6 +106,7 @@ fn part2(page_ordering_rules: &HashMap<u32, Vec<u32>>, pages_to_produce: &Vec<Ve
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::library::*;
 
     fn get_lines() -> (HashMap<u32, Vec<u32>>, Vec<Vec<u32>>) {
         let input = r#"47|53

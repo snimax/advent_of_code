@@ -1,14 +1,20 @@
-use super::{parse_file, parse_lines, Dir, Pos};
+use super::{Dir, Pos};
 
-pub fn solve() {
-    if let Ok(line_string) = parse_file("Inputs/day14.txt") {
-        let lines = parse_lines(&line_string);
+use crate::years::AdventDay;
+
+pub struct Day14 {}
+
+impl AdventDay for Day14 {
+    fn solve(&self) {
+        let lines = self.get_input();
         let robots = parse_map(&lines);
         let map_size = Pos { x: 101, y: 103 };
         println!("Part1 solution: {}", part1(&map_size, &robots));
         println!("Part2 solution: {}", part2(&map_size, &robots));
-    } else {
-        println!("Could not parse file");
+    }
+
+    fn get_input_path(&self) -> &str {
+        "Inputs/2024/day14.txt"
     }
 }
 
@@ -173,6 +179,7 @@ fn part2(map_size: &Pos, robots: &[Robot]) -> usize {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::library::*;
 
     fn get_robots() -> (Pos, Vec<Robot>) {
         let input = r#"p=0,4 v=3,-3

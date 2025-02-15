@@ -1,14 +1,19 @@
-use super::{parse_file, parse_lines, Pos};
-use std::{collections::HashMap, collections::HashSet};
+use super::Pos;
+use crate::years::AdventDay;
+use std::collections::{HashMap, HashSet};
 
-pub fn solve() {
-    if let Ok(line_string) = parse_file("Inputs/day8.txt") {
-        let lines = parse_lines(&line_string);
+pub struct Day8 {}
+
+impl AdventDay for Day8 {
+    fn solve(&self) {
+        let lines = self.get_input();
         let (map_size, antenna_positions) = parse_map(&lines);
         println!("Part1 solution: {}", part1(&map_size, &antenna_positions));
         println!("Part2 solution: {}", part2(&map_size, &antenna_positions));
-    } else {
-        println!("Could not parse file");
+    }
+
+    fn get_input_path(&self) -> &str {
+        "Inputs/2024/day8.txt"
     }
 }
 
@@ -108,6 +113,7 @@ fn part2(map_size: &Pos, antenna_positions: &HashMap<char, Vec<Pos>>) -> usize {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::library::*;
 
     fn get_equations() -> (Pos, HashMap<char, Vec<Pos>>) {
         let input = r#"............

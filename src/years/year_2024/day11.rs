@@ -1,13 +1,23 @@
 use super::parse_file;
 use std::collections::HashMap;
 
-pub fn solve() {
-    if let Ok(line_string) = parse_file("Inputs/day11.txt") {
-        let stones = parse_line(&line_string);
-        println!("Part1 solution: {}", part1(&stones));
-        println!("Part2 solution: {}", part2(&stones));
-    } else {
-        println!("Could not parse file");
+use crate::years::AdventDay;
+
+pub struct Day11 {}
+
+impl AdventDay for Day11 {
+    fn solve(&self) {
+        if let Ok(line_string) = parse_file(self.get_input_path()) {
+            let stones = parse_line(&line_string);
+            println!("Part1 solution: {}", part1(&stones));
+            println!("Part2 solution: {}", part2(&stones));
+        } else {
+            println!("Could not parse file");
+        }
+    }
+
+    fn get_input_path(&self) -> &str {
+        "Inputs/2024/day11.txt"
     }
 }
 

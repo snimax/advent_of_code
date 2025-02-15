@@ -1,17 +1,23 @@
-use super::{parse_file, parse_lines, Dir, Map, Pos, DIRECTIONS, DOWN, LEFT, RIGHT, UP};
+use super::{Dir, Map, Pos, DIRECTIONS, DOWN, LEFT, RIGHT, UP};
 use std::{
     cmp::Ordering,
     collections::{BinaryHeap, HashMap, HashSet, VecDeque},
 };
 
-pub fn solve() {
-    if let Ok(line_string) = parse_file("Inputs/day16.txt") {
-        let lines = parse_lines(&line_string);
+use crate::years::AdventDay;
+
+pub struct Day16 {}
+
+impl AdventDay for Day16 {
+    fn solve(&self) {
+        let lines = self.get_input();
         let (start_pos, end_pos, map) = parse_map(&lines);
         println!("Part1 solution: {}", part1(&start_pos, &end_pos, &map));
         println!("Part2 solution: {}", part2(&start_pos, &end_pos, &map));
-    } else {
-        println!("Could not parse file");
+    }
+
+    fn get_input_path(&self) -> &str {
+        "Inputs/2024/day16.txt"
     }
 }
 
@@ -230,6 +236,7 @@ fn find_optimal_paths(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::library::*;
 
     fn get_small_input() -> (Pos, Pos, Map<Space>) {
         let input = r#"###############

@@ -1,12 +1,16 @@
-use super::{parse_file, parse_lines};
+use crate::years::AdventDay;
 
-pub fn solve() {
-    if let Ok(line_string) = parse_file("Inputs/day4.txt") {
-        let lines = parse_lines(&line_string);
+pub struct Day4 {}
+
+impl AdventDay for Day4 {
+    fn solve(&self) {
+        let lines = self.get_input();
         println!("Part1 solution: {}", part1(&lines));
         println!("Part2 solution: {}", part2(&lines));
-    } else {
-        println!("Could not parse file");
+    }
+
+    fn get_input_path(&self) -> &str {
+        "Inputs/2024/day4.txt"
     }
 }
 
@@ -145,6 +149,7 @@ fn part2(lines: &[String]) -> usize {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::library::*;
 
     fn get_lines() -> Vec<String> {
         let input = r#"MMMSXXMASM

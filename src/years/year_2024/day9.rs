@@ -1,12 +1,21 @@
 use super::parse_file;
+use crate::years::AdventDay;
 
-pub fn solve() {
-    if let Ok(line_string) = parse_file("Inputs/day9.txt") {
-        let disk = parse_disk_string(&line_string);
-        println!("Part1 solution: {}", part1(&disk));
-        println!("Part2 solution: {}", part2(&line_string));
-    } else {
-        println!("Could not parse file");
+pub struct Day9 {}
+
+impl AdventDay for Day9 {
+    fn solve(&self) {
+        if let Ok(line_string) = parse_file(self.get_input_path()) {
+            let disk = parse_disk_string(&line_string);
+            println!("Part1 solution: {}", part1(&disk));
+            println!("Part2 solution: {}", part2(&line_string));
+        } else {
+            println!("Could not parse file");
+        }
+    }
+
+    fn get_input_path(&self) -> &str {
+        "Inputs/2024/day9.txt"
     }
 }
 

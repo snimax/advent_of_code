@@ -1,14 +1,19 @@
-use super::{parse_file, parse_lines};
 use std::collections::HashMap;
 
-pub fn solve() {
-    if let Ok(line_string) = parse_file("Inputs/day24.txt") {
-        let lines = parse_lines(&line_string);
+use crate::years::AdventDay;
+
+pub struct Day24 {}
+
+impl AdventDay for Day24 {
+    fn solve(&self) {
+        let lines = self.get_input();
         let (wires, gates) = parse_wires(&lines);
         println!("Part1 solution: {}", part1(&wires, &gates));
         println!("Part2 solution: {}", part2(&wires, &gates));
-    } else {
-        println!("Could not parse file");
+    }
+
+    fn get_input_path(&self) -> &str {
+        "Inputs/2024/day24.txt"
     }
 }
 
@@ -171,6 +176,7 @@ fn part2(_wires: &HashMap<String, usize>, gates: &[Gate]) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::library::*;
 
     fn get_input_small() -> (HashMap<String, usize>, Vec<Gate>) {
         let input: &str = r#"x00: 1

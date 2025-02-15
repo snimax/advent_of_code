@@ -1,13 +1,19 @@
-use super::{cramers_rule, parse_file, parse_lines, Equation, Pos};
+use super::{cramers_rule, Equation, Pos};
 
-pub fn solve() {
-    if let Ok(line_string) = parse_file("Inputs/day13.txt") {
-        let lines = parse_lines(&line_string);
+use crate::years::AdventDay;
+
+pub struct Day13 {}
+
+impl AdventDay for Day13 {
+    fn solve(&self) {
+        let lines = self.get_input();
         let claw_machines = parse_claw_machines(&lines);
         println!("Part1 solution: {}", part1(&claw_machines));
         println!("Part2 solution: {}", part2(&claw_machines));
-    } else {
-        println!("Could not parse file");
+    }
+
+    fn get_input_path(&self) -> &str {
+        "Inputs/2024/day13.txt"
     }
 }
 
@@ -126,6 +132,7 @@ fn part2(claw_machines: &[ClawMachine]) -> usize {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::library::*;
 
     fn get_lines() -> Vec<ClawMachine> {
         let input = r#"Button A: X+94, Y+34

@@ -1,22 +1,24 @@
-use super::{dir::DIRECTIONS, parse_file, parse_lines, pos::Pos};
+use super::{Pos, DIRECTIONS};
 use std::collections::{HashMap, VecDeque};
 
-pub fn solve() {
-    if let Ok(line_string) = parse_file("Inputs/day18.txt") {
-        let lines = parse_lines(&line_string);
+use crate::years::AdventDay;
+
+pub struct Day18 {}
+
+impl AdventDay for Day18 {
+    fn solve(&self) {
+        let lines = self.get_input();
         let byte_positions = parse_byte_positions(&lines);
         let end_pos = Pos { x: 70, y: 70 };
         println!(
             "Part1 solution: {}",
             part1(&byte_positions[..1024], &end_pos)
         );
-        use std::time::Instant;
-        let now = Instant::now();
         println!("Part2 solution: {}", part2(&byte_positions, &end_pos));
-        let elapsed = now.elapsed();
-        println!("Elapsed: {:?}", elapsed);
-    } else {
-        println!("Could not parse file");
+    }
+
+    fn get_input_path(&self) -> &str {
+        "Inputs/2024/day18.txt"
     }
 }
 
@@ -122,6 +124,7 @@ fn part2(byte_positions: &[Pos], end_pos: &Pos) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::library::*;
 
     fn get_input() -> Vec<Pos> {
         let input = r#"5,4

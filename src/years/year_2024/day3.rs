@@ -1,14 +1,18 @@
-use super::{parse_file, parse_lines};
+use crate::years::AdventDay;
 use regex::Regex;
 use std::num::ParseIntError;
 
-pub fn solve() {
-    if let Ok(line_string) = parse_file("Inputs/day3.txt") {
-        let lines = parse_lines(&line_string);
+pub struct Day3 {}
+
+impl AdventDay for Day3 {
+    fn solve(&self) {
+        let lines = self.get_input();
         println!("Part1 solution: {}", part1(&lines));
         println!("Part2 solution: {}", part2(&lines));
-    } else {
-        println!("Could not parse file");
+    }
+
+    fn get_input_path(&self) -> &str {
+        "Inputs/2024/day3.txt"
     }
 }
 

@@ -1,18 +1,20 @@
-use super::{parse_file, parse_lines, Dir, Map, Pos, DOWN, LEFT, RIGHT, UP};
+use super::{Dir, Map, Pos, DOWN, LEFT, RIGHT, UP};
 use std::collections::HashSet;
 
-pub fn solve() {
-    if let Ok(line_string) = parse_file("Inputs/day6.txt") {
-        let lines = parse_lines(&line_string);
+use crate::years::AdventDay;
+
+pub struct Day6 {}
+
+impl AdventDay for Day6 {
+    fn solve(&self) {
+        let lines = self.get_input();
         let (mut map, start_pos) = parse_map(&lines);
         println!("Part1 solution: {}", part1(&map, &start_pos));
-        use std::time::Instant;
-        let now = Instant::now();
         println!("Part2 solution: {}", part2(&mut map, &start_pos));
-        let elapsed = now.elapsed();
-        println!("Elapsed: {:?}", elapsed);
-    } else {
-        println!("Could not parse file");
+    }
+
+    fn get_input_path(&self) -> &str {
+        "Inputs/2024/day6.txt"
     }
 }
 
@@ -132,6 +134,7 @@ fn part2(map: &mut Map<u8>, start_pos: &Pos) -> usize {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::library::*;
 
     fn get_input() -> (Map<u8>, Pos) {
         let input = r#"....#.....

@@ -1,9 +1,12 @@
-use super::{parse_file, parse_lines};
 use std::collections::HashMap;
 
-pub fn solve() {
-    if let Ok(line_string) = parse_file("Inputs/day19.txt") {
-        let lines = parse_lines(&line_string);
+use crate::years::AdventDay;
+
+pub struct Day19 {}
+
+impl AdventDay for Day19 {
+    fn solve(&self) {
+        let lines = self.get_input();
         let (available_patterns, patterns_to_make) = parse_towels(&lines);
         println!(
             "Part1 solution: {}",
@@ -13,8 +16,10 @@ pub fn solve() {
             "Part2 solution: {}",
             part2(&available_patterns, &patterns_to_make)
         );
-    } else {
-        println!("Could not parse file");
+    }
+
+    fn get_input_path(&self) -> &str {
+        "Inputs/2024/day19.txt"
     }
 }
 
@@ -114,6 +119,7 @@ fn part2(available_patterns: &[Towel], patterns_to_make: &[Towel]) -> usize {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::library::*;
 
     fn get_input() -> (Vec<Towel>, Vec<Towel>) {
         let input = r#"r, wr, b, g, bwu, rb, gb, br

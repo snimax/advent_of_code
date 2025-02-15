@@ -1,9 +1,13 @@
-use super::{parse_file, parse_lines, Dir, Pos, DOWN, LEFT, RIGHT, UP};
+use super::{Dir, Pos, DOWN, LEFT, RIGHT, UP};
 use std::collections::HashSet;
 
-pub fn solve() {
-    if let Ok(line_string) = parse_file("Inputs/day15.txt") {
-        let lines = parse_lines(&line_string);
+use crate::years::AdventDay;
+
+pub struct Day15 {}
+
+impl AdventDay for Day15 {
+    fn solve(&self) {
+        let lines = self.get_input();
         let (robot_pos, walls, boxes, instructions) = parse_map(&lines);
         println!(
             "Part1 solution: {}",
@@ -13,8 +17,10 @@ pub fn solve() {
             "Part2 solution: {}",
             part2(&robot_pos, &walls, &boxes, &instructions)
         );
-    } else {
-        println!("Could not parse file");
+    }
+
+    fn get_input_path(&self) -> &str {
+        "Inputs/2024/day15.txt"
     }
 }
 
@@ -335,6 +341,8 @@ fn part2(start_robot_pos: &Pos, walls: &Walls, boxes: &Boxes, instructions: &[&D
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::library::*;
+
     fn get_smallest_input() -> (Pos, Walls, Boxes, Vec<&'static Dir>) {
         let input = r#"#######
 #...#.#
