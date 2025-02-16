@@ -71,11 +71,11 @@ fn parse_schematic(lines: &[String]) -> Schematic {
                 });
             }
         }
-        if start_idx.is_some() {
+        if let Some(start) = start_idx {
             parts.push(SchematicNumber {
                 num: number.parse().unwrap(),
                 row: row as i32,
-                col: start_idx.unwrap()..line.len() as i32,
+                col: start..line.len() as i32,
             });
         }
     }
