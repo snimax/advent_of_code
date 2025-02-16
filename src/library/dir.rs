@@ -82,6 +82,13 @@ pub const RIGHT: &Dir = &Dir(Pos { x: 1, y: 0 });
 
 pub const DIRECTIONS: [&Dir; 4] = [UP, DOWN, LEFT, RIGHT];
 
+pub const DIAGONALS: [&Dir; 4] = [
+    &Dir(Pos { x: -1, y: -1 }), // Top left
+    &Dir(Pos { x: 1, y: -1 }),  // Top right
+    &Dir(Pos { x: -1, y: 1 }),  // Bottom left
+    &Dir(Pos { x: 1, y: 1 }),   // Bottom right
+];
+
 pub fn get_opposite_dir(dir: &Dir) -> &Dir {
     if dir == UP {
         return DOWN;

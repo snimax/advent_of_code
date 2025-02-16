@@ -1,8 +1,8 @@
-use super::super::{dir::*, library::*, map::*, pos::*};
 use super::{AdventDay, DayNum, Year};
 
 mod day1;
 mod day2;
+mod day3;
 // mod day10;
 // mod day11;
 // mod day12;
@@ -19,7 +19,6 @@ mod day2;
 // mod day23;
 // mod day24;
 // mod day25;
-// mod day3;
 // mod day4;
 // mod day5;
 // mod day6;
@@ -34,7 +33,7 @@ impl Year for Year2023 {
         match day {
             DayNum(1) => day1::Day1 {}.solve(),
             DayNum(2) => day2::Day2 {}.solve(),
-            // DayNum(3) => day3::Day3 {}.solve(),
+            DayNum(3) => day3::Day3 {}.solve(),
             // DayNum(4) => day4::Day4 {}.solve(),
             // DayNum(5) => day5::Day5 {}.solve(),
             // DayNum(6) => day6::Day6 {}.solve(),
