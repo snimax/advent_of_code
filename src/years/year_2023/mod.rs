@@ -2,6 +2,7 @@ use super::super::{dir::*, library::*, map::*, pos::*};
 use super::{AdventDay, DayNum, Year};
 
 mod day1;
+mod day2;
 // mod day10;
 // mod day11;
 // mod day12;
@@ -12,7 +13,6 @@ mod day1;
 // mod day17;
 // mod day18;
 // mod day19;
-// mod day2;
 // mod day20;
 // mod day21;
 // mod day22;
@@ -33,7 +33,7 @@ impl Year for Year2023 {
     fn solve_day(&self, day: DayNum) {
         match day {
             DayNum(1) => day1::Day1 {}.solve(),
-            // DayNum(2) => day2::Day2 {}.solve(),
+            DayNum(2) => day2::Day2 {}.solve(),
             // DayNum(3) => day3::Day3 {}.solve(),
             // DayNum(4) => day4::Day4 {}.solve(),
             // DayNum(5) => day5::Day5 {}.solve(),
