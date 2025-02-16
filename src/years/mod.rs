@@ -1,5 +1,6 @@
 use crate::library::{parse_file, parse_lines};
 pub mod year_2024;
+pub mod year_2023;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct DayNum(i32);

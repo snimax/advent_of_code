@@ -2,7 +2,7 @@ use std::env;
 
 mod library;
 pub use library::*;
-use years::{year_2024, DayNum, Year};
+use years::{year_2023, year_2024, DayNum, Year};
 mod years;
 
 fn help() {
@@ -25,9 +25,8 @@ fn main() {
     let day = DayNum::new(day_num).expect("Day number should be between 1 and 25!");
 
     match year_num {
-        Ok(2024) => {
-            year_2024::Year2024 {}.solve_day(day);
-        }
+        Ok(2023) => { year_2023::Year2023 {}.solve_day(day); }
+        Ok(2024) => { year_2024::Year2024 {}.solve_day(day); }
         Ok(year) => panic!("Year {year} not implemented yet!"),
         Err(_) => panic!("Year argument should be a number!"),
     }
