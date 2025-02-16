@@ -2,16 +2,6 @@ use super::library::{parse_file, parse_lines};
 pub mod year_2024;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub struct YearNum(i32);
-impl YearNum {
-    pub fn new(i: i32) -> Option<YearNum> {
-        match i {
-            2024 => Some(YearNum(i)),
-            _ => None,
-        }
-    }
-}
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct DayNum(i32);
 impl DayNum {
     pub fn new(i: i32) -> Option<DayNum> {
