@@ -26,8 +26,7 @@ fn main() {
 
     match year_num {
         Ok(2024) => {
-            let year_2024 = year_2024::Year2024::new();
-            year_2024.solve_day(day);
+            year_2024::Year2024 {}.solve_day(day);
         }
         Ok(year) => panic!("Year {year} not implemented yet!"),
         Err(_) => panic!("Year argument should be a number!"),
