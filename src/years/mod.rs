@@ -1,4 +1,4 @@
-use super::library::{parse_file, parse_lines};
+use crate::library::{parse_file, parse_lines};
 pub mod year_2024;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
