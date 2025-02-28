@@ -58,9 +58,7 @@ fn solve_race(race: &Race) -> u64 {
 }
 
 fn part1(races: &[Race]) -> u64 {
-    races
-        .iter()
-        .fold(1, |acc, race: &Race| acc * solve_race(race))
+    races.iter().map(solve_race).product()
 }
 
 fn part2(races: &[Race]) -> u64 {

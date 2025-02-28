@@ -99,7 +99,7 @@ fn part1(map_size: &Pos, robots: &[Robot]) -> usize {
         }
     }
 
-    quadrants.iter().fold(1, |acc, &e| acc * e as usize)
+    quadrants.iter().product()
 }
 
 fn found_multiple_robots_in_a_row(robots: &[Robot]) -> bool {
