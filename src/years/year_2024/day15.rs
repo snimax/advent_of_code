@@ -116,7 +116,7 @@ fn move_affected_object(
     max_y: i32,
     dir: &Dir,
 ) {
-    let (_, ref mut pos) = object;
+    let (_, pos) = object;
     if pos.x >= min_x && pos.x <= max_x && pos.y >= min_y && pos.y <= max_y {
         *pos = &*pos + dir;
     }
