@@ -1,6 +1,7 @@
 pub mod dir;
 pub mod map;
 pub mod pos;
+pub mod prime;
 
 use std::fs;
 use std::io::Error;
