@@ -8,6 +8,7 @@ mod day5;
 mod day6;
 mod day7;
 mod day8;
+mod day9;
 // mod day10;
 // mod day11;
 // mod day12;
@@ -24,7 +25,6 @@ mod day8;
 // mod day23;
 // mod day24;
 // mod day25;
-// mod day9;
 
 pub struct Year2023 {}
 
@@ -39,7 +39,7 @@ impl Year for Year2023 {
             DayNum(6) => day6::Day6 {}.solve(),
             DayNum(7) => day7::Day7 {}.solve(),
             DayNum(8) => day8::Day8 {}.solve(),
-            // DayNum(9) => day9::Day9 {}.solve(),
+            DayNum(9) => day9::Day9 {}.solve(),
             // DayNum(10) => day10::Day10 {}.solve(),
             // DayNum(11) => day11::Day11 {}.solve(),
             // DayNum(12) => day12::Day12 {}.solve(),
