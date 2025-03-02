@@ -34,7 +34,7 @@ fn map_region(map: &Map<u8>, start_pos: &Pos) -> (u8, HashSet<Pos>) {
                 .for_each(|neighbor| queue.push_front(neighbor.clone()));
         }
     }
-    (plant_type, visited)
+    (plant_type.to_owned(), visited)
 }
 
 fn parse_regions(map: &Map<u8>) -> Vec<(u8, HashSet<Pos>)> {
@@ -95,7 +95,7 @@ fn find_sides(region: &(u8, HashSet<Pos>), map: &Map<u8>) -> usize {
             .iter()
             .map(|p| {
                 let pos = p + position;
-                map.valid_pos(&pos) && map.get(&pos) == *plant_type
+                map.valid_pos(&pos) && *map.get(&pos) == *plant_type
             })
             .collect();
 
@@ -105,7 +105,7 @@ fn find_sides(region: &(u8, HashSet<Pos>), map: &Map<u8>) -> usize {
             .iter()
             .map(|p| {
                 let pos = p + position;
-                map.valid_pos(&pos) && map.get(&pos) == *plant_type
+                map.valid_pos(&pos) && *map.get(&pos) == *plant_type
             })
             .collect();
 

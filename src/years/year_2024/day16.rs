@@ -82,13 +82,13 @@ fn find_straighetest_path(
         let neighbor_ccw = &curr_pos + ccw;
         let next_pos = &curr_pos + curr_dir;
 
-        if map.get(&next_pos) != Space::Wall {
+        if *map.get(&next_pos) != Space::Wall {
             queue.push_back((next_pos, curr_dir, steps + 1));
         }
-        if map.get(&neighbor_cw) != Space::Wall {
+        if *map.get(&neighbor_cw) != Space::Wall {
             queue.push_back((neighbor_cw, cw, steps + 1001));
         }
-        if map.get(&neighbor_ccw) != Space::Wall {
+        if *map.get(&neighbor_ccw) != Space::Wall {
             queue.push_back((neighbor_ccw, ccw, steps + 1001));
         }
     }
@@ -168,7 +168,7 @@ fn find_optimal_paths(
 
         for &d in DIRECTIONS.iter() {
             let new_pos = &curr_pos + d;
-            if map.get(&new_pos) == Space::Wall {
+            if *map.get(&new_pos) == Space::Wall {
                 continue;
             }
 

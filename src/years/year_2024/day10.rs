@@ -50,7 +50,7 @@ fn find_trailheads(map: &Map<i32>, start_pos: &Pos, all_permutations: bool) -> u
     queue.push_back(start_pos.clone());
     while let Some(pos) = queue.pop_front() {
         if all_permutations || visited.insert(pos.clone()) {
-            if map.get(&pos) == 9 {
+            if *map.get(&pos) == 9 {
                 trailheads += 1;
             } else {
                 let new_height = map.get(&pos) + 1;

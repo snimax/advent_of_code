@@ -56,7 +56,7 @@ fn find_path_length(start_pos: &Pos, end_pos: &Pos, map: &Map<Space>) -> Vec<(Po
         steps += 1;
         for dir in DIRECTIONS {
             let next_pos = &curr_pos + dir;
-            if map.get(&next_pos) != Space::Wall && !visited.contains(&next_pos) {
+            if *map.get(&next_pos) != Space::Wall && !visited.contains(&next_pos) {
                 curr_pos = next_pos;
                 break;
             }

@@ -1,14 +1,13 @@
 use super::dir::*;
 use super::pos::*;
 
-#[derive(Clone)]
-pub struct Map<T: Copy> {
+pub struct Map<T> {
     pub map: Vec<Vec<T>>,
     pub size_x: usize,
     pub size_y: usize,
 }
 
-impl<T: Copy> Map<T> {
+impl<T> Map<T> {
     pub fn new<F>(lines: &[String], mut func: F) -> Map<T>
     where
         F: FnMut(char, &Pos) -> T,
@@ -38,7 +37,7 @@ impl<T: Copy> Map<T> {
         }
     }
 
-    pub fn next(&self, curr_pos: &Pos, dir: &Dir) -> Option<T> {
+    pub fn next(&self, curr_pos: &Pos, dir: &Dir) -> Option<&T> {
         let new_pos = Pos {
             x: curr_pos.x + dir.x,
             y: curr_pos.y + dir.y,
@@ -49,8 +48,8 @@ impl<T: Copy> Map<T> {
         }
     }
 
-    pub fn get(&self, pos: &Pos) -> T {
-        self.map[pos.y as usize][pos.x as usize]
+    pub fn get(&self, pos: &Pos) -> &T {
+        &self.map[pos.y as usize][pos.x as usize]
     }
 
     pub fn set(&mut self, pos: &Pos, val: T) {
@@ -72,7 +71,7 @@ impl<T: Copy> Map<T> {
 
         for &dir in DIRECTIONS.iter() {
             let neighbor_pos = pos + dir;
-            if self.valid_pos(&neighbor_pos) && self.get(&neighbor_pos) == *cmp_val {
+            if self.valid_pos(&neighbor_pos) && self.get(&neighbor_pos) == cmp_val {
                 valid_neighbors.push(neighbor_pos);
             }
         }

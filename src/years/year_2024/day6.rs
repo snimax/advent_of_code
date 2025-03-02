@@ -108,7 +108,7 @@ fn part2(map: &mut Map<u8>, start_pos: &Pos) -> usize {
             b'.' => {
                 let next_pos = &curr_pos + dir;
                 // No use in putting out obsticles where one already exists
-                if map.get(&next_pos) == b'#' {
+                if *map.get(&next_pos) == b'#' {
                     continue;
                 }
 
