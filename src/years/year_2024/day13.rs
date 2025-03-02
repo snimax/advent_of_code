@@ -1,4 +1,4 @@
-use super::{cramers_rule, Equation, Pos};
+use super::{Equation, Pos, cramers_rule};
 
 use crate::years::AdventDay;
 

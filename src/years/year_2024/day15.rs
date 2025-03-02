@@ -1,4 +1,4 @@
-use super::{Dir, Pos, DOWN, LEFT, RIGHT, UP};
+use super::{DOWN, Dir, LEFT, Pos, RIGHT, UP};
 use std::collections::HashSet;
 
 use crate::years::AdventDay;

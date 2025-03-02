@@ -1,4 +1,4 @@
-use super::{Dir, Map, Pos, DIRECTIONS, DOWN, LEFT, RIGHT, UP};
+use super::{DIRECTIONS, DOWN, Dir, LEFT, Map, Pos, RIGHT, UP};
 use std::{
     cmp::Ordering,
     collections::{BinaryHeap, HashMap, HashSet, VecDeque},

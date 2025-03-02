@@ -1,4 +1,4 @@
-use super::{Pos, DIRECTIONS};
+use super::{DIRECTIONS, Pos};
 use std::collections::{HashMap, VecDeque};
 
 use crate::years::AdventDay;

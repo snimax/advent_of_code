@@ -68,11 +68,7 @@ fn find_match(list: &[String], row: usize, col: usize) -> usize {
         && row1_char == Some('A')
         && row2_char == Some('M')
         && row3_char == Some('X');
-    if xmas || samx {
-        1
-    } else {
-        0
-    }
+    if xmas || samx { 1 } else { 0 }
 }
 
 fn find_matches(list: &[String]) -> usize {

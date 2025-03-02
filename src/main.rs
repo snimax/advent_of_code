@@ -2,7 +2,7 @@ use std::env;
 
 mod library;
 pub use library::*;
-use years::{year_2023, year_2024, DayNum, Year};
+use years::{DayNum, Year, year_2023, year_2024};
 mod years;
 
 fn help() {

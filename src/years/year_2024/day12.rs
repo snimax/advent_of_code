@@ -277,7 +277,9 @@ fn find_sides(region: &(u8, HashSet<Pos>), map: &Map<u8>) -> usize {
 
         if blah != corners {
             let diff = corners - blah;
-            println!("{diff} new corners with : {position:?} => {clockwise_neighbors:?}, {clockwise_diagonal_neighbors:?}");
+            println!(
+                "{diff} new corners with : {position:?} => {clockwise_neighbors:?}, {clockwise_diagonal_neighbors:?}"
+            );
         } else {
             println!("{position:?} => {clockwise_neighbors:?}, {clockwise_diagonal_neighbors:?}");
         }

@@ -159,43 +159,43 @@ fn convert_strength_with_jokers(num_jokers: i32, hand: &Hand) -> Strength {
 
     match strength_without_jokers {
         Strength::FiveOfAKind => Strength::FiveOfAKind,
-        Strength::FourOfAKind => {
-            Strength::FiveOfAKind
-        }
-        Strength::FullHouse => {
-            Strength::FiveOfAKind
-        }
-        Strength::ThreeOfAKind => {
-            match num_jokers {
-                1 => Strength::FourOfAKind,
-                2 => Strength::FiveOfAKind,
-                num => panic!("Got {num} jokers when I Expected to only have 1 or 2 in Three of a kind case with hand: {:?}", hand.cards)
-            }
-        }
-        Strength::TwoPair => {
-            match num_jokers {
-                1 => Strength::FullHouse,
-                2 => Strength::FourOfAKind,
-                num => panic!("Got {num} jokers when I expected to only have either 1 or 2 in a Two pair case with hand: {:?}", hand.cards)
-            }
+        Strength::FourOfAKind => Strength::FiveOfAKind,
+        Strength::FullHouse => Strength::FiveOfAKind,
+        Strength::ThreeOfAKind => match num_jokers {
+            1 => Strength::FourOfAKind,
+            2 => Strength::FiveOfAKind,
+            num => panic!(
+                "Got {num} jokers when I Expected to only have 1 or 2 in Three of a kind case with hand: {:?}",
+                hand.cards
+            ),
         },
-        Strength::OnePair => {
-            match num_jokers {
-                1 => Strength::ThreeOfAKind,
-                2 => Strength::FourOfAKind,
-                3 => Strength::FiveOfAKind,
-                num => panic!("Got {num} jokers when I expected to only have between 1 and 3 in a One pair case with hand: {:?}", hand.cards)
-            }
-        }
-        Strength::HighCard => {
-            match num_jokers {
-                1 => Strength::OnePair,
-                2 => Strength::ThreeOfAKind,
-                3 => Strength::FourOfAKind,
-                4 => Strength::FiveOfAKind,
-                num => panic!("Got {num} jokers when I expected between 1 to 4 in HighCard case with hand: {:?}", hand.cards)
-            }
-        }
+        Strength::TwoPair => match num_jokers {
+            1 => Strength::FullHouse,
+            2 => Strength::FourOfAKind,
+            num => panic!(
+                "Got {num} jokers when I expected to only have either 1 or 2 in a Two pair case with hand: {:?}",
+                hand.cards
+            ),
+        },
+        Strength::OnePair => match num_jokers {
+            1 => Strength::ThreeOfAKind,
+            2 => Strength::FourOfAKind,
+            3 => Strength::FiveOfAKind,
+            num => panic!(
+                "Got {num} jokers when I expected to only have between 1 and 3 in a One pair case with hand: {:?}",
+                hand.cards
+            ),
+        },
+        Strength::HighCard => match num_jokers {
+            1 => Strength::OnePair,
+            2 => Strength::ThreeOfAKind,
+            3 => Strength::FourOfAKind,
+            4 => Strength::FiveOfAKind,
+            num => panic!(
+                "Got {num} jokers when I expected between 1 to 4 in HighCard case with hand: {:?}",
+                hand.cards
+            ),
+        },
     }
 }
 
