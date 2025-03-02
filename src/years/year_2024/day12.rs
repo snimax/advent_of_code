@@ -29,7 +29,7 @@ fn map_region(map: &Map<u8>, start_pos: &Pos) -> (u8, HashSet<Pos>) {
     queue.push_back(start_pos.clone());
     while let Some(pos) = queue.pop_front() {
         if visited.insert(pos.clone()) {
-            map.get_neighbors_cmp(&pos, &plant_type)
+            map.get_neighbors_cmp(&pos, plant_type)
                 .iter()
                 .for_each(|neighbor| queue.push_front(neighbor.clone()));
         }
