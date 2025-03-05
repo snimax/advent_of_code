@@ -8,6 +8,10 @@ impl Dir {
     pub const fn new(x: i32, y: i32) -> Self {
         Dir(Pos { x, y })
     }
+
+    pub fn is_opposite(&self, other: &Self) -> bool {
+        (self * -1) == **other
+    }
 }
 
 impl Deref for Dir {
