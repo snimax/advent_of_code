@@ -2,7 +2,7 @@ use super::dir::*;
 use super::pos::*;
 
 pub struct Map<T> {
-    pub map: Vec<Vec<T>>,
+    pub map: Vec<T>,
     pub size_x: usize,
     pub size_y: usize,
 }
@@ -14,12 +14,11 @@ impl<T> Map<T> {
     {
         let size_y = lines.len();
         let size_x = lines[0].len();
-        let mut map = Vec::with_capacity(size_y);
+        let mut map = Vec::with_capacity(size_y * size_x);
 
         for (row, line) in lines.iter().enumerate() {
-            let mut map_row = Vec::with_capacity(size_x);
             for (col, char) in line.chars().enumerate() {
-                map_row.push(func(
+                map.push(func(
                     char,
                     &Pos {
                         x: col as i32,
@@ -27,7 +26,6 @@ impl<T> Map<T> {
                     },
                 ));
             }
-            map.push(map_row);
         }
 
         Map {
@@ -35,6 +33,10 @@ impl<T> Map<T> {
             size_x,
             size_y,
         }
+    }
+
+    fn transplate_pos_to_index(&self, pos: &Pos) -> usize {
+        (pos.y * self.size_x as i32 + pos.x) as usize
     }
 
     pub fn next(&self, curr_pos: &Pos, dir: &Dir) -> Option<&T> {
@@ -49,11 +51,12 @@ impl<T> Map<T> {
     }
 
     pub fn get(&self, pos: &Pos) -> &T {
-        &self.map[pos.y as usize][pos.x as usize]
+        &self.map[self.transplate_pos_to_index(pos)]
     }
 
     pub fn set(&mut self, pos: &Pos, val: T) {
-        self.map[pos.y as usize][pos.x as usize] = val;
+        let index = self.transplate_pos_to_index(pos);
+        self.map[index] = val;
     }
 
     pub fn valid_pos(&self, pos: &Pos) -> bool {
