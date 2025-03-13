@@ -29,37 +29,19 @@ fn turn_right(dir: &mut &Dir) {
 }
 
 fn parse_map(lines: &[String]) -> (Map<u8>, Pos) {
-    let size_y = lines.len();
-    let size_x = lines[0].len();
-
-    let mut map = vec![vec![]; size_y];
     let mut start_pos = Pos { x: 0, y: 0 };
-
-    map.iter_mut()
-        .zip(lines)
-        .for_each(|(map_row, line)| *map_row = line.as_bytes().to_vec());
-
-    lines.iter().enumerate().for_each(|(row, line)| {
-        line.as_bytes().iter().enumerate().for_each(|(col, val)| {
-            if *val == b'^' {
-                start_pos = Pos {
-                    x: col as i32,
-                    y: row as i32,
-                };
-            }
-        })
+    let map = Map::new(lines, |char, pos|{
+        if char == '^' {
+            start_pos = pos.to_owned();
+            return b'.'
+        }
+        match char {
+            '#' => b'#',
+            '.' => b'.',
+            _ => panic!("Got unexpected char '{char}' while parsing map")
+        }
     });
-
-    map[start_pos.y as usize][start_pos.x as usize] = b'.';
-
-    (
-        Map {
-            map,
-            size_x,
-            size_y,
-        },
-        start_pos,
-    )
+    (map, start_pos)
 }
 
 fn find_visited_positions(map: &Map<u8>, start_pos: &Pos, dir: &Dir) -> Option<HashSet<Pos>> {
