@@ -30,15 +30,15 @@ fn turn_right(dir: &mut &Dir) {
 
 fn parse_map(lines: &[String]) -> (Map<u8>, Pos) {
     let mut start_pos = Pos { x: 0, y: 0 };
-    let map = Map::new(lines, |char, pos|{
+    let map = Map::new(lines, |char, pos| {
         if char == '^' {
             start_pos = pos.to_owned();
-            return b'.'
+            return b'.';
         }
         match char {
             '#' => b'#',
             '.' => b'.',
-            _ => panic!("Got unexpected char '{char}' while parsing map")
+            _ => panic!("Got unexpected char '{char}' while parsing map"),
         }
     });
     (map, start_pos)

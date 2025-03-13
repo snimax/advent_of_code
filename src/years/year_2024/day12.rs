@@ -40,8 +40,8 @@ fn map_region(map: &Map<u8>, start_pos: &Pos) -> (u8, HashSet<Pos>) {
 fn parse_regions(map: &Map<u8>) -> Vec<(u8, HashSet<Pos>)> {
     let mut regions = Vec::new();
 
-    for row in 0..map.size_y {
-        for col in 0..map.size_x {
+    for row in 0..map.cols() {
+        for col in 0..map.rows() {
             let curr_pos = Pos {
                 x: col as i32,
                 y: row as i32,

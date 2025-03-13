@@ -3,8 +3,9 @@ use super::pos::*;
 
 pub struct Map<T> {
     pub map: Vec<T>,
-    pub size_x: usize,
-    pub size_y: usize,
+    size_x: usize,
+    size_y: usize,
+    transposed: bool,
 }
 
 impl<T> Map<T> {
@@ -32,11 +33,32 @@ impl<T> Map<T> {
             map,
             size_x,
             size_y,
+            transposed: false,
+        }
+    }
+
+    pub fn rows(&self) -> usize {
+        if self.transposed {
+            self.size_x
+        } else {
+            self.size_y
+        }
+    }
+
+    pub fn cols(&self) -> usize {
+        if self.transposed {
+            self.size_y
+        } else {
+            self.size_x
         }
     }
 
     fn transplate_pos_to_index(&self, pos: &Pos) -> usize {
-        (pos.y * self.size_x as i32 + pos.x) as usize
+        if !self.transposed {
+            (pos.y * self.cols() as i32 + pos.x) as usize
+        } else {
+            (pos.x * self.rows() as i32 + pos.y) as usize
+        }
     }
 
     pub fn next(&self, curr_pos: &Pos, dir: &Dir) -> Option<&T> {
@@ -60,7 +82,7 @@ impl<T> Map<T> {
     }
 
     pub fn valid_pos(&self, pos: &Pos) -> bool {
-        if pos.x < 0 || pos.y < 0 || pos.x >= self.size_x as i32 || pos.y >= self.size_y as i32 {
+        if pos.x < 0 || pos.y < 0 || pos.x >= self.cols() as i32 || pos.y >= self.rows() as i32 {
             return false;
         }
         true
@@ -81,4 +103,48 @@ impl<T> Map<T> {
 
         valid_neighbors
     }
+
+    pub fn transpose(&mut self) {
+        self.transposed = !self.transposed;
+    }
+
+    pub fn print<F>(&self, mut func: F)
+    where
+        F: FnMut(&T) -> char,
+    {
+        for y in 0..self.rows() as i32 {
+            for x in 0..self.cols() as i32 {
+                print!("{}", func(self.get(&Pos { x, y })));
+            }
+            println!()
+        }
+    }
+}
+
+impl<T: Clone> Clone for Map<T> {
+    fn clone(&self) -> Self {
+        Map {
+            map: self.map.clone(),
+            size_x: self.size_x,
+            size_y: self.size_y,
+            transposed: self.transposed,
+        }
+    }
+}
+
+#[test]
+fn transpose_map() {
+    let mut map = Map::new(&["AB".to_string(), "CD".to_string()], |c, _| c);
+    assert!(*map.get(&Pos { x: 1, y: 0 }) == 'B');
+    assert!(*map.get(&Pos { x: 0, y: 1 }) == 'C');
+    map.transpose();
+    assert!(*map.get(&Pos { x: 0, y: 1 }) == 'B');
+    assert!(*map.get(&Pos { x: 1, y: 0 }) == 'C');
+
+    let mut map = Map::new(&["ABC".to_string(), "DEF".to_string()], |c, _| c);
+    assert!(*map.get(&Pos { x: 2, y: 0 }) == 'C');
+    assert!(*map.get(&Pos { x: 0, y: 1 }) == 'D');
+    map.transpose();
+    assert!(*map.get(&Pos { x: 0, y: 2 }) == 'C');
+    assert!(*map.get(&Pos { x: 1, y: 0 }) == 'D');
 }
