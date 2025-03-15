@@ -6,6 +6,7 @@ mod day10;
 mod day11;
 mod day12;
 mod day13;
+mod day14;
 mod day2;
 mod day3;
 mod day4;
@@ -14,7 +15,6 @@ mod day6;
 mod day7;
 mod day8;
 mod day9;
-// mod day14;
 // mod day15;
 // mod day16;
 // mod day17;
@@ -45,7 +45,7 @@ impl Year for Year2023 {
             DayNum(11) => day11::Day11 {}.solve(),
             DayNum(12) => day12::Day12 {}.solve(),
             DayNum(13) => day13::Day13 {}.solve(),
-            // DayNum(14) => day14::Day14 {}.solve(),
+            DayNum(14) => day14::Day14 {}.solve(),
             // DayNum(15) => day15::Day15 {}.solve(),
             // DayNum(16) => day16::Day16 {}.solve(),
             // DayNum(17) => day17::Day17 {}.solve(),
