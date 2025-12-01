@@ -2,7 +2,7 @@ use std::env;
 
 mod library;
 pub use library::*;
-use years::{DayNum, Year, year_2023, year_2024};
+use years::{DayNum, Year, year_2023, year_2024, year_2025};
 mod years;
 
 fn help() {
@@ -30,6 +30,9 @@ fn main() {
         }
         Ok(2024) => {
             year_2024::Year2024 {}.solve_day(day);
+        }
+        Ok(2025) => {
+            year_2025::Year2025 {}.solve_day(day);
         }
         Ok(year) => panic!("Year {year} not implemented yet!"),
         Err(_) => panic!("Year argument should be a number!"),
