@@ -57,7 +57,7 @@ impl Year for Year2023 {
             // DayNum(23) => day23::Day23 {}.solve(),
             // DayNum(24) => day24::Day24 {}.solve(),
             // DayNum(25) => day25::Day25 {}.solve(),
-            _ => println!("Day {day:?} is not implemented for year 2024"),
+            _ => println!("Day {day:?} is not implemented for year 2023"),
         }
     }
 }
