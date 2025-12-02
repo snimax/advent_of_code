@@ -7,7 +7,7 @@ mod day1;
 // mod day12;
 // mod day13;
 // mod day14;
-// mod day2;
+mod day2;
 // mod day3;
 // mod day4;
 // mod day5;
@@ -33,7 +33,7 @@ impl Year for Year2025 {
     fn solve_day(&self, day: DayNum) {
         match day {
             DayNum(1) => day1::Day1 {}.solve(),
-            // DayNum(2) => day2::Day2 {}.solve(),
+            DayNum(2) => day2::Day2 {}.solve(),
             // DayNum(3) => day3::Day3 {}.solve(),
             // DayNum(4) => day4::Day4 {}.solve(),
             // DayNum(5) => day5::Day5 {}.solve(),
