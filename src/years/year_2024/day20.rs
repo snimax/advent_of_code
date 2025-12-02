@@ -64,8 +64,7 @@ fn find_path_length(start_pos: &Pos, end_pos: &Pos, map: &Map<Space>) -> Vec<(Po
     }
 
     path_length.push((end_pos.clone(), steps));
-    let path_length = path_length.iter().rev().cloned().collect();
-    path_length
+    path_length.iter().rev().cloned().collect()
 }
 
 fn get_shortcuts(
@@ -87,16 +86,16 @@ fn get_shortcuts(
                 }
                 let shortcut_pos = pos + &Pos { x, y };
 
-                if let Some(shortcut_len_to_end) = lookup.get(&shortcut_pos) {
-                    if steps_to_end > shortcut_len_to_end {
-                        let diff = steps_to_end - (shortcut_len_to_end + cheat_length);
+                if let Some(shortcut_len_to_end) = lookup.get(&shortcut_pos)
+                    && steps_to_end > shortcut_len_to_end
+                {
+                    let diff = steps_to_end - (shortcut_len_to_end + cheat_length);
 
-                        if novel_cheats.insert((pos.clone(), shortcut_pos.clone())) {
-                            if let Some(val) = shortcut_len.get_mut(&diff) {
-                                *val += 1;
-                            } else {
-                                shortcut_len.insert(diff, 1);
-                            }
+                    if novel_cheats.insert((pos.clone(), shortcut_pos.clone())) {
+                        if let Some(val) = shortcut_len.get_mut(&diff) {
+                            *val += 1;
+                        } else {
+                            shortcut_len.insert(diff, 1);
                         }
                     }
                 }

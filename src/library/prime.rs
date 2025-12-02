@@ -22,7 +22,7 @@ impl PrimeFactorizationHelper {
         let mut curr_reminder = num;
         while curr_reminder > 1 {
             for &prime in self.prime_memoization.iter() {
-                if curr_reminder % prime == 0 {
+                if curr_reminder.is_multiple_of(prime) {
                     prime_factorization.push(prime);
                     curr_reminder /= prime;
                     continue;

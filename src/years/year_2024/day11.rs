@@ -75,7 +75,7 @@ fn recurse(stone: usize, depth: usize, seen_values: &mut HashMap<(usize, usize),
 
     let num_digits = number_of_digits(stone);
 
-    if num_digits % 2 == 0 {
+    if num_digits.is_multiple_of(2) {
         let (a, b) = split_usize(stone);
         let res = recurse(a, depth - 1, seen_values) + recurse(b, depth - 1, seen_values);
         seen_values.insert(key, res);

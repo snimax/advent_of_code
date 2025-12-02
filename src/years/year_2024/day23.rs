@@ -48,25 +48,24 @@ fn part1(graph: &HashMap<String, Vec<String>>) -> usize {
         for second_computer in first_computer_connections {
             if let Some(second_computer_connections) = graph.get(second_computer) {
                 for third_computer in second_computer_connections {
-                    if third_computer != first_computer {
-                        if let Some(third_computer_connections) = graph.get(third_computer) {
-                            if third_computer_connections.contains(first_computer) {
-                                let combo1 = (first_computer, second_computer, third_computer);
-                                let combo2 = (first_computer, third_computer, second_computer);
-                                let combo3 = (second_computer, first_computer, third_computer);
-                                let combo4 = (second_computer, third_computer, first_computer);
-                                let combo5 = (third_computer, first_computer, second_computer);
-                                let combo6 = (third_computer, second_computer, first_computer);
-                                if !sets.contains(&combo1)
-                                    && !sets.contains(&combo2)
-                                    && !sets.contains(&combo3)
-                                    && !sets.contains(&combo4)
-                                    && !sets.contains(&combo5)
-                                    && !sets.contains(&combo6)
-                                {
-                                    sets.insert(combo1);
-                                }
-                            }
+                    if third_computer != first_computer
+                        && let Some(third_computer_connections) = graph.get(third_computer)
+                        && third_computer_connections.contains(first_computer)
+                    {
+                        let combo1 = (first_computer, second_computer, third_computer);
+                        let combo2 = (first_computer, third_computer, second_computer);
+                        let combo3 = (second_computer, first_computer, third_computer);
+                        let combo4 = (second_computer, third_computer, first_computer);
+                        let combo5 = (third_computer, first_computer, second_computer);
+                        let combo6 = (third_computer, second_computer, first_computer);
+                        if !sets.contains(&combo1)
+                            && !sets.contains(&combo2)
+                            && !sets.contains(&combo3)
+                            && !sets.contains(&combo4)
+                            && !sets.contains(&combo5)
+                            && !sets.contains(&combo6)
+                        {
+                            sets.insert(combo1);
                         }
                     }
                 }

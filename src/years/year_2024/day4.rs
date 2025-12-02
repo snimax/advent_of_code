@@ -110,10 +110,10 @@ fn find_match_part2(list: &[String], row: usize, col: usize) -> usize {
             if let Some('S') = list[row + 2].chars().nth(col + 2) {
                 potential_match = true;
             }
-        } else if let Some('S') = list[row].chars().nth(col) {
-            if let Some('M') = list[row + 2].chars().nth(col + 2) {
-                potential_match = true;
-            }
+        } else if let Some('S') = list[row].chars().nth(col)
+            && let Some('M') = list[row + 2].chars().nth(col + 2)
+        {
+            potential_match = true;
         }
 
         if potential_match {
@@ -121,10 +121,10 @@ fn find_match_part2(list: &[String], row: usize, col: usize) -> usize {
                 if let Some('S') = list[row].chars().nth(col + 2) {
                     return 1;
                 }
-            } else if let Some('S') = list[row + 2].chars().nth(col) {
-                if let Some('M') = list[row].chars().nth(col + 2) {
-                    return 1;
-                }
+            } else if let Some('S') = list[row + 2].chars().nth(col)
+                && let Some('M') = list[row].chars().nth(col + 2)
+            {
+                return 1;
             }
         }
     }

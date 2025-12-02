@@ -20,7 +20,7 @@ struct Game {
 }
 
 fn parse_game(line: &str) -> Game {
-    let mut parts = line.split(':').last().unwrap().split(" | ");
+    let mut parts = line.split(':').next_back().unwrap().split(" | ");
 
     let winning_numbers = parts
         .next()

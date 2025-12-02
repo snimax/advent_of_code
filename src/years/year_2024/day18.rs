@@ -80,11 +80,11 @@ fn get_path(visited: &HashMap<Pos, usize>, end_pos: &Pos) -> Option<Vec<Pos>> {
 
         for &direction in DIRECTIONS.iter() {
             let new_pos = &curr_pos + direction;
-            if let Some(steps) = visited.get(&new_pos) {
-                if *steps < min_steps {
-                    min_steps = *steps;
-                    next_pos = new_pos;
-                }
+            if let Some(steps) = visited.get(&new_pos)
+                && *steps < min_steps
+            {
+                min_steps = *steps;
+                next_pos = new_pos;
             }
         }
 

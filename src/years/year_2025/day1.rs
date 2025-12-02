@@ -166,7 +166,7 @@ L1"#;
         Ok(())
     }
 
-        #[test]
+    #[test]
     fn test_part2_edge_case_left() -> Result<(), String> {
         let lines = edge_case_left();
         assert_eq!(part2(&lines), 3);

@@ -165,7 +165,7 @@ fn parse_input(lines: &[String]) -> (Vec<SeedRange>, Vec<Vec<RangeMapping>>) {
     if let Some(line) = seed_ranges_iter.next() {
         let parts = line
             .split(':')
-            .last()
+            .next_back()
             .expect("Expected seed ranges")
             .split_ascii_whitespace();
         for part in parts {

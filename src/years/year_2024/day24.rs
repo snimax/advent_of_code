@@ -82,18 +82,18 @@ fn simulate_wires(wires: &HashMap<String, usize>, gates: &[Gate]) -> HashMap<Str
     while !gates.is_empty() {
         let mut exit = true;
         for (idx, Gate { op, a, b, res }) in gates.iter().enumerate() {
-            if let Some(wire_a) = wires.get(a) {
-                if let Some(wire_b) = wires.get(b) {
-                    let val = match op {
-                        GateType::And => wire_a & wire_b,
-                        GateType::Or => wire_a | wire_b,
-                        GateType::Xor => wire_a ^ wire_b & 1,
-                    };
-                    wires.insert(res.clone(), val);
-                    gates.remove(idx);
-                    exit = false;
-                    break;
-                }
+            if let Some(wire_a) = wires.get(a)
+                && let Some(wire_b) = wires.get(b)
+            {
+                let val = match op {
+                    GateType::And => wire_a & wire_b,
+                    GateType::Or => wire_a | wire_b,
+                    GateType::Xor => wire_a ^ wire_b & 1,
+                };
+                wires.insert(res.clone(), val);
+                gates.remove(idx);
+                exit = false;
+                break;
             }
         }
         if exit {

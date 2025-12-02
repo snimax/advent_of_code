@@ -81,10 +81,10 @@ fn try_solve_equation(
     let first_num = numbers[0];
     let rest = &numbers[1..];
 
-    if let Some(ans) = try_solve_equation_recursive(answer, first_num, rest, allow_concatenation) {
-        if ans == *answer {
-            return Some(ans);
-        }
+    if let Some(ans) = try_solve_equation_recursive(answer, first_num, rest, allow_concatenation)
+        && ans == *answer
+    {
+        return Some(ans);
     }
 
     None

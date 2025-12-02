@@ -193,10 +193,10 @@ fn find_optimal_paths(
                 let key = (new_pos.clone(), d);
                 best_costs_found.insert(key.clone(), new_cost);
                 predecessors.insert(key, vec![(curr_pos.clone(), curr_dir)]);
-            } else if let Some(p) = predecessors.get_mut(&(new_pos.clone(), d)) {
-                if !p.contains(&(curr_pos.clone(), curr_dir)) {
-                    p.push((curr_pos.clone(), curr_dir));
-                }
+            } else if let Some(p) = predecessors.get_mut(&(new_pos.clone(), d))
+                && !p.contains(&(curr_pos.clone(), curr_dir))
+            {
+                p.push((curr_pos.clone(), curr_dir));
             }
 
             queue.push(Node {

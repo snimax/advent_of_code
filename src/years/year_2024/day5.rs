@@ -60,10 +60,10 @@ fn parse_input(lines: &[String]) -> (HashMap<u32, Vec<u32>>, Vec<Vec<u32>>) {
 
 fn check_correct_pages(pages: &[u32], rules: &HashMap<u32, Vec<u32>>) -> usize {
     for (page_num, page) in pages.iter().enumerate().rev() {
-        if let Some(rule) = rules.get(page) {
-            if pages[0..page_num].iter().any(|val| rule.contains(val)) {
-                return 0;
-            }
+        if let Some(rule) = rules.get(page)
+            && pages[0..page_num].iter().any(|val| rule.contains(val))
+        {
+            return 0;
         }
     }
     pages[pages.len() / 2] as usize
@@ -83,10 +83,10 @@ fn fix_page(pages: &[u32], rules: &HashMap<u32, Vec<u32>>) -> usize {
 
     // Sorts the list in the reverse order, but solves the problem
     sorted_pages.sort_by(|a, b| {
-        if let Some(values) = rules.get(b) {
-            if values.contains(a) {
-                return Ordering::Less;
-            }
+        if let Some(values) = rules.get(b)
+            && values.contains(a)
+        {
+            return Ordering::Less;
         }
         Ordering::Equal
     });
