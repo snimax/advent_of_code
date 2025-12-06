@@ -11,7 +11,7 @@ mod day2;
 mod day3;
 mod day4;
 mod day5;
-// mod day6;
+mod day6;
 // mod day7;
 // mod day8;
 // mod day9;
@@ -37,7 +37,7 @@ impl Year for Year2025 {
             DayNum(3) => day3::Day3 {}.solve(),
             DayNum(4) => day4::Day4 {}.solve(),
             DayNum(5) => day5::Day5 {}.solve(),
-            // DayNum(6) => day6::Day6 {}.solve(),
+            DayNum(6) => day6::Day6 {}.solve(),
             // DayNum(7) => day7::Day7 {}.solve(),
             // DayNum(8) => day8::Day8 {}.solve(),
             // DayNum(9) => day9::Day9 {}.solve(),
