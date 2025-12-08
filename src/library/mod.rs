@@ -1,6 +1,7 @@
 pub mod dir;
 pub mod map;
 pub mod pos;
+pub mod pos3d;
 pub mod prime;
 
 use std::fs;
